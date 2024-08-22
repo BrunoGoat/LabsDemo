@@ -74,7 +74,7 @@ alpha <- mu * ((mu * (1 - mu)) / (sigma^2) - 1)
 beta <- (1 - mu) * ((mu * (1 - mu)) / (sigma^2) - 1)
 
 # Simular valores a partir de nuestra distribución beta
-fi_i <- # completar
+fi_i <- beta(alpha, beta) # completar
 
 # Graficar
 hist(fi_i, breaks = 50, main = "", xlab = "Fecundabilidad")
