@@ -23,17 +23,20 @@ source("plot_fun.R") # funciones para graficar
 # Método Gini
 n <- 10^6
 fi <- 0.2 # fecundabilidad: probabilidad mensual de concebir 
-m <- 0:30 # observamos concepciones desde el 1er al 20vo mes desde el casamiento
-gini_props <- # completar
+m <- 0:30 # observamos concepciones desde el 1er al 30vo mes desde el casamiento
+gini_props <- ((1 -fi)^{m})*fi  # completar
 gini <- as.data.frame(cbind(meses = m, gini_props))
 plot(gini)
 
 # Describa brevemente lo que se observa en el gráfico
-
+# Gini sugiere que la probabilidad de tener un hijo es de 0.20 en el momento 0
+# y cae a mas de la mitad 10 meses despues. Luego sigue cayendo y se mantiene 
+# en una probabilidad muy cercana a 0
 
 # Ahora simulamos meses hasta la primera concepción a partir de una 
 # distribución geométrica (distribución binomial negativa con un éxito)
-meses <- rnbinom(n = n, size = , prob = fi)  # completar
+meses <- rnbinom(n = n, size = 1, prob = fi)  # completar
+
 nbinom <- as.data.frame(prop.table(table(meses))) 
 names(nbinom)[2] <- "nbinom_props"
 con <- merge(gini, nbinom, by = "meses", all = T)
@@ -54,6 +57,8 @@ legend(10, 0.15, legend = c("Modelo Gini", "Distribución Geométrica"),
 
 # Describa brevemente lo que se observa en el gráfico
 
+# Se nos muestra que el modelo Gini y la distribución geometrica tienen 
+# resultados muy similares
 
 
 # Ahora que sabemos como simular el tiempo de espera hasta una 1era concepción 
