@@ -31,7 +31,9 @@ plot(gini)
 # Describa brevemente lo que se observa en el gráfico
 # Gini sugiere que la probabilidad de tener un hijo es de 0.20 en el momento 0
 # y cae a mas de la mitad 10 meses despues. Luego sigue cayendo y se mantiene 
-# en una probabilidad muy cercana a 0
+# en una probabilidad muy cercana a , proporcion de casos de exitos/concepciones
+
+
 
 # Ahora simulamos meses hasta la primera concepción a partir de una 
 # distribución geométrica (distribución binomial negativa con un éxito)
@@ -74,7 +76,7 @@ alpha <- mu * ((mu * (1 - mu)) / (sigma^2) - 1)
 beta <- (1 - mu) * ((mu * (1 - mu)) / (sigma^2) - 1)
 
 # Simular valores a partir de nuestra distribución beta
-fi_i <- beta(alpha, beta) # completar
+fi_i <- rbeta(n, alpha, beta) # completar
 
 # Graficar
 hist(fi_i, breaks = 50, main = "", xlab = "Fecundabilidad")
@@ -162,12 +164,14 @@ plot_hst(hst, c(0.5, n), n)
 
 # describa brevemente lo que se observa en el gráfico 
 
+#Se observa que el primer hijo de las parejas suele nacer a los 20 años de los
+#padres
 
 # Ejercicio:
 # Simular la edad al segundo nacimiento para este cohorte de mujeres. Graficar.
 
-wt_2c <- # completar 
-wt_2b <- # completar 
+wt_2c <- rnbinom(n, 1, fi) # completar
+wt_2b <- wt_1b + ns + wt_2c + 9 + ns # completar 
 
 hst <- as.data.frame(cbind(id = rep(1:n, 2),
                            edad = c(wt_1b, wt_2b)/12,
@@ -190,9 +194,9 @@ plot_hst(hst, c(0.5, n), n)
 
 gen_hst <- function(n, fi, ns, mu, su){
   
-  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 # 
+  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 #simulacion de n uniones, a traves de la log normal
   
-  wt_c <- lapply(1:50, function(x) rnbinom(n, 1, fi)) #
+  wt_c <- lapply(1:50, function(x) rnbinom(n, 1, fi)) #simulaciones de los diferentes tiempos para tener 50 hijos
   
   wt_b <- list()
   wt_b[[1]] <- wt_u + wt_c[[1]] + 9 #
@@ -229,7 +233,7 @@ gen_hst <- function(n, fi, ns, mu, su){
 # mu_u = 20 
 # sd_u = 1.1
 
-ls_hst <- # completar
+ls_hst <- gen_hst(8, 0.2, 6, 20, 1.1) # completar
   
 # graficamos
 for (i in 1:length(ls_hst)){

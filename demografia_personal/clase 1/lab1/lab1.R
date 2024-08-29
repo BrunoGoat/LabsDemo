@@ -123,14 +123,10 @@ max(hst$cum_fec)
 
 
 
-hst$edad <- floor(hst$edad)
-hst$fx <- hst$nac/n 
-hst <- hst %>% 
-       mutate(fx = replace_na(fx, 0))
-hst$fx <- hst$fx/n
-
-plot(hst$edad, hst$fx)
-
+edades_b <- floor(hst$edad[!is.na(hst$id)])
+fx <- table(factor(edades_b, levels = edad))/ n 
+plot(as.data.frame(fx))
+sum(fx)
 
 
 # describa brevemente lo que se observa en el gráfico.
@@ -200,7 +196,8 @@ plot_cum_fec(n_hst)
 # describa brevemente lo que se observa en el gráfico.
 
 # tasas de fecundidad por edad f(x)
-fx <- # completar
+edades_b <- floor(n_hst$edad[!is.na(hst$id)])
+fx <- table(factor(edades_b, levels = edad))/ n 
 plot(edad, fx)
 
 # describa brevemente lo que se observa en el gráfico.
