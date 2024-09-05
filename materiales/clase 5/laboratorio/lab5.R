@@ -8,6 +8,13 @@
 # Vamos a trabajar con el último modelo que construimos, con fecundabilidad
 # dependiente de la edad
 
+r = 0.02094238 
+x0 = 454.6911
+n = 8
+ns = 6
+mu = 20
+su = 1.1
+
 gen_hst_t <- function(n, ns, x0, r, mu, su, id = vector(), wt_c = vector()){
   
   meses <- 1:(50*12) # vector con el tiempo t en meses
@@ -15,7 +22,7 @@ gen_hst_t <- function(n, ns, x0, r, mu, su, id = vector(), wt_c = vector()){
   # fecundabilidad
   fi_t <- 0.2 / (1 + exp(r*(meses-x0))) # fi en t
   fi_t[max(meses)] <- 0 # nos aseguramos que haya riesgo 0 luego de 50 años de edad 
-  #plot(meses,fi_t)
+  plot(meses,fi_t)
   
   # tiempo de espera a la unión
   wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12
@@ -82,7 +89,14 @@ gen_hst_t <- function(n, ns, x0, r, mu, su, id = vector(), wt_c = vector()){
 # Esto nos va permitir calcular las diferencias en la fecundidad total en el
 # análisis de sensibilidad.
 
-hst_ref <- # completar
+r = 0.028
+x0 = 420
+n = 5000
+ns = 11
+mu = 18
+su = 1.1
+
+hst_ref <- gen_hst_t(n, ns, x0, r, mu, su, id = vector(), wt_c = vector())# completar
 
 plot_sum_fx <- function(dat, lines = F, ...){
   fx <- table(factor(floor(dat$edad), levels = 10:50)) / max(dat$id)
@@ -113,25 +127,26 @@ plot_sum_fx(hst_ref, ylim = c(0,0.7))
 #################################
 ns_vals <- seq(6, 24, 1)
 
-hst_ns_var <- # completar usando lapply()
+hst_ns_var <- lapply(ns_vals, function(x) gen_hst_t(n = n, ns = x, x0 = x0,r = r,mu =  mu,su = su))# completar usando lapply()
 
 ref_tfr <- plot_sum_fx(hst_ref, ylim = c(0, 0.7))
-var_tfr_ns <- lapply(, plot_sum_fx, lines = T, col = "red") #completar
+var_tfr_ns <- lapply(hst_ns_var, plot_sum_fx, lines = T, col = "red") #completar
 
-# Describa lo que se observa en el gráfico
+# Describa lo que se observa en el gráfico.
 
+# En la grafica podemos ver los diferentes valores de ns en las lineas rojas, las tasas mas grandes de natalidad son los valores mas bajos de ns, en este caso el valor mas bajo es 1, las tasas mas bajas son para los ns mas altos.
 
 
 # Ahora calculamos la diferencia entre las cohortes simuladas
 # con los distintos valores de ns y la cohorte de referencia 
 # con respecto a la tasa global de fecundidad (tfr) 
 
-tfr_dif_ns <- # completar usando sapply()
-
+tfr_dif_ns <- sapply(var_tfr_ns, function(x) x - ref_tfr)# completar usando sapply()
+    
 # y graficamos
 plot(ns_vals, tfr_dif_ns)
 
-# Describa lo que se observa en el gráfico
+# Describa lo que se observa en el gráfico, vemos las distintas diferencias de la tasa global de fecundidad con respecto a la tasa original cuando ns era igual a 11.
 
 
 

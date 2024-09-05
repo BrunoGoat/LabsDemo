@@ -164,19 +164,22 @@ gen_hst_t <- function(n, ns, x0, r, mu, su){
   
   maxt <- max(sapply(fi_it, length)) # Con esto nos quedamos el el vector mas largo, o sea la union mas temprana
   
+  
+  
+  
   for(t in 1:maxt){ 
     
-    is <- which(runif(n) < sapply(fi_it, function(x) x[t])) # Comparamos las diferentes probabilidades de cada mujer de concebir en el momento t con una uniforme 0, 1 para saber si hay exito o no, si la probabilidad es mayor que la uniforme tenemos un exito
+    is <- which(runif(n) < sapply(fi_it, function(x) x[t])) # n uniformes con valores entre 0 y 1, y lo compara con la probabilidad de concebir en el momento t de cada una de las mujeres (sapply), con eso sabremos si hay concepcion o no, el which nos indica la posicion en el vector, o sea, que mujer/es es/son la del exito.
     
     if(length(is)!=0){ 
       
-      wts <- sapply(is, function(x) (wt_u[x]-1) + t) # 
+      wts <- sapply(is, function(x) (wt_u[x]-1) + t) # Si hubieron concepciones, vamos a generar tiempo hasta esa concepcion, indexamos el momento en el que se unieron y sumamos t, ya que ese es el momento en que se da la concepcion, conciben en el mismo momento que se unieron, o sea igual a wt_u = wt_1c = wts ( segun t )
       
       id <- c(id, is) 
       wt_c <- c(wt_c, wts)
       
       
-      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) # Quitamos los exitos que sucedieron en el periodo de embarazo y no suceptibilidad
+      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) # Iterar sobre el vector de las mujeres que tuvieron una concepcion, desde t hasta t+9+ns eso sea NA, no hay probabilidad de concepcion en ese tiempo. Quitamos los exitos que sucedieron en el periodo de embarazo y no suceptibilidad
       
     }
     
@@ -197,7 +200,7 @@ gen_hst_t <- function(n, ns, x0, r, mu, su){
 # 20 años (y desvío estandar 1.1) utilizando el modelo con fecundabilidad
 # dependiente de t), graficar.
 
-hst_t <- gen_hst_t(5000, 6, x0, r, 20, 1.1 ) # completar
+hst_t <- gen_hst_t(5000, 6, x0, r, 20, 1.1 ) # completar (Parametros perfectos ns 11, mu u, 18, x0 = 420, r= 0,028)
 
 # graficamos sobre los resultados anterirores
 plot(fx_ht, col = "violet", pch = 16, ylim = c(0,0.7))
@@ -214,8 +217,7 @@ points(10:50, as.data.frame(fx_t)[,2], col = "blue")
 
 
 
-# El primer modelo (rojo) tenia siempre la misma fecundidad sin que cambie con la edad por eso se mantiene arriba a pesar del tiempo,
-# el segundo (azul) tiene una 
+# El primer modelo (rojo) tenia siempre la misma fecundidad sin que cambie con la edad por eso se mantiene arriba a pesar del tiempo, el segundo si lo contempla, por eso decae al pasar el tiempo
 
 
 # A que se deben las diferencias entre el modelo más reciente
@@ -234,3 +236,4 @@ hst_ht_sim <-  # completar
   plot(fx_ht, col = "violet", pch = 16, ylim = c(0,0.7))
 fx_ht_sim <- table(factor(floor(hst_ht_sim$edad), levels = 10:50)) / max(hst_ht_sim$id)
 points(10:50, as.data.frame(fx_ht_sim)[,2], col = "red")
+
