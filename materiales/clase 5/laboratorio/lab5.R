@@ -155,10 +155,11 @@ plot(ns_vals, tfr_dif_ns)
 ###############################
 mu_vals <- seq(18, 25, 0.25)
 
-hst_mu_var <- 
+hst_mu_var <- lapply(mu_vals, function(x) gen_hst_t(n = n, ns = ns, x0 = x0,r = r,mu =  x,su = su))
 
 plot_sum_fx(hst_ref, ylim = c(0, 0.7))
-var_tfr_mu <- 
+
+var_tfr_mu <- lapply(hst_mu_var, plot_sum_fx, lines = T, col = "red") #completar
   
 # Describa lo que se observa en el gráfico
 
