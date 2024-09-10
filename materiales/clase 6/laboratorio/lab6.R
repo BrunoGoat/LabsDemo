@@ -42,6 +42,9 @@ plot_fx_hfd(dat = fx_es, cohorts = 1940:1970, type = "lines")
 
 # Describir lo que se observa en el gráfico.
 
+# A medida que las cohortes son mas recientes vemos como se traslada el maximo 
+# de la fecundidad desde los 20 hasta al rededor de los 30, y el maximo de la 
+# tasa de fecundidad es mucho mas bajo, es incluso la mitad.
 
 
 #######################################################
@@ -66,18 +69,19 @@ table(obs_d$ideal_nr, useNA = "always")
 # Obtener un data.frame con los valores y las frecuencias 
 # Obtener un data.frame con los valores y las frecuencias 
 
-obs_d <- 
+obs_d <- as.data.frame(table(obs_d$ideal_nr), stringsAsFactors = F)
 names(obs_d) <- c("nr","freq")
 
 # graficar las frequencias
-plot(x = , y = , type = "p")
+plot(x = obs_d$nr , y = obs_d$freq , type = "p")
 
 # graficar las proporciones
-plot(x = obs_d$nr, y = , type = "p")
+plot(x = obs_d$nr, y = obs_d$freq/sum(obs_d$freq) , type = "p")
 
 # Describa brevemente lo que se observa en el gráfico
 
-
+# En el grafico podemos ver las proporciones de las preferencias de las personas
+# para diferentes cantidades de hijos, los mas repetidos son 1, 2, 3 
 
 # Vamos a modelar el número deseado de hijos con una distirbución lognormal. 
 # Para esto vamos a simular 1000 números aleatorios de una distribución lognromal.
@@ -97,8 +101,7 @@ lines(table(sim_d)/sum(table(sim_d)), type = "p",
 
 
 # Describir los que se observa en el gráfico
-
-
+# Vemos que ajusta bastante bien con nuestro grafico inicial
 
 # Ahora que comprobamos que la distribución lognormal ajusta bien los datos del 
 # número ideal de hijos, podemos utilizar esta distribución para asignar
