@@ -167,7 +167,7 @@ var_tfr_mu <- lapply(hst_mu_var, plot_sum_fx, lines = T, col = "red") #completar
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
 
-tfr_dif_mu <- 
+tfr_dif_mu <- sapply(var_tfr_mu, function(x) x - ref_tfr)
   
 plot(mu_vals, tfr_dif_mu)
 
@@ -180,10 +180,10 @@ plot(mu_vals, tfr_dif_mu)
 #######################################
 su_vals <- seq(1.1, 4, 0.2)
 
-hst_su_var <- 
+hst_su_var <- lapply(su_vals, function(x) gen_hst_t(n = n, ns = ns, x0 = x0,r = r,mu =  mu,su = x))
   
 plot_sum_fx(hst_ref, ylim = c(0,0.7))
-var_tfr_su <- 
+var_tfr_su <- lapply(hst_su_var, plot_sum_fx, lines = T, col = "red")
 
 # Describa lo que se observa en el gráfico
 
@@ -191,7 +191,7 @@ var_tfr_su <-
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
 
-tfr_dif_su <- 
+tfr_dif_su <- sapply(var_tfr_su, function(x) x - ref_tfr)
   
 plot(su_vals, tfr_dif_su)
 
@@ -204,10 +204,10 @@ plot(su_vals, tfr_dif_su)
 #################################################
 x0_vals <- seq(420, 300, -10)
 
-hst_x0_var <- 
+hst_x0_var <- lapply(x0_vals, function(x) gen_hst_t(n = n, ns = ns, x0 = x,r = r,mu =  mu,su = su))
   
 plot_sum_fx(hst_ref, ylim = c(0,0.7))
-var_tfr_x0 <- 
+var_tfr_x0 <- lapply(hst_x0_var, plot_sum_fx, lines = T, col = "red")
   
 # Describa lo que se observa en el gráfico
 
@@ -215,7 +215,7 @@ var_tfr_x0 <-
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
 
-tfr_dif_x0 <- 
+tfr_dif_x0 <- sapply(var_tfr_x0, function(x) x - ref_tfr)
   
 plot(x0_vals, tfr_dif_x0)
 
@@ -226,10 +226,10 @@ plot(x0_vals, tfr_dif_x0)
 #################################################
 r_vals <- seq(0.02, 0.1, 0.005)
 
-hst_r_var <- 
+hst_r_var <- lapply(r_vals, function(x) gen_hst_t(n = n, ns = ns, x0 = x0,r = x,mu =  mu,su = su))
   
 plot_sum_fx(hst_ref, ylim = c(0,0.7))
-var_tfr_r <- 
+var_tfr_r <- lapply(hst_r_var, plot_sum_fx, lines = T, col = "red")
   
 # Describa lo que se observa en el gráfico
 
@@ -237,7 +237,7 @@ var_tfr_r <-
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
 
-tfr_dif_r <- 
+tfr_dif_r <- sapply(var_tfr_r, function(x) x - ref_tfr)
   
 plot(r_vals, tfr_dif_r)
 
