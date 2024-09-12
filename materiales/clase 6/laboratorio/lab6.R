@@ -44,7 +44,8 @@ plot_fx_hfd(dat = fx_es, cohorts = 1940:1970, type = "lines")
 
 # A medida que las cohortes son mas recientes vemos como se traslada el maximo 
 # de la fecundidad desde los 20 hasta al rededor de los 30, y el maximo de la 
-# tasa de fecundidad es mucho mas bajo, es incluso la mitad.
+# tasa de fecundidad es mucho mas bajo, es incluso la mitad. Se reduce el nivel 
+# y hay un aplazamiento de la fecundidad.
 
 
 #######################################################
@@ -123,8 +124,8 @@ x0 <- 420
 r <-  0.04
 mu <- 22
 su <- 1.1
-mu_d <- 2.4
-sd_d <- 1.1
+mu_d <- 2.4 # Media del numero deseado de hijos
+sd_d <- 1.1 # Desvio del numero deseado de hijos
 c <- 0.1
 
 gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
@@ -139,29 +140,29 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
   fi_t[589:600] <- 0
   
   # tiempo de espera a la unión
-  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 #
+  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 #Se calcula el tiempo hasta la union en meses utilizando la distribucion log normal
   
-  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) #
+  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) # n vectores de los cuales se desprende la probabilidad de concebir de cada mujer
   
   dk <- round(rlnorm(n, meanlog = log(mu_d^2/ sqrt(mu_d^2+sd_d^2)),
-                        sdlog = sqrt(log(1 + sd_d^2/mu_d^2))),0) #
+                        sdlog = sqrt(log(1 + sd_d^2/mu_d^2))),0) # Se simulan n numeros deseados de hijos
   
   maxt <- max(sapply(fi_it, length))
   
   for(t in 1:maxt){ 
     
-    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) #  
+    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) # c es la probabilidad de que falle el anticonceptivo, con is estamos midiendo que mujeres tuvieron hijos, el c comienza a tener valor y peso en la expresion en el momento que las diferentes mujeres llegan al numero deseado de hijos y comienzan a usar anticonceptivos, con esto, baja mucho la probabilidad de concepcion aunque no la reduce a 0.
     
     if(length(is)!=0){ 
       
-      wts <- sapply(is, function(x) (wt_u[x]-1) + t) # 
+      wts <- sapply(is, function(x) (wt_u[x]-1) + t) # guardamos los diferentes edades hasta la concepcion en meses
       
       id <- c(id, is) 
       wt_c <- c(wt_c, wts)
       
-      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) #
+      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) # eliminamos la posibilidad desde que hubo concepción hasta que termine el periodo de no susceptibilidad
       
-      k <- as.vector(table(factor(id, levels = 1:n))) #
+      k <- as.vector(table(factor(id, levels = 1:n))) #Cantidad efectiva de hijos por mujer
       
     }
     
@@ -179,8 +180,19 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
 
 # Ejercicio: Describir como se modela el número ideal de hijos y el efecto 
 # de las prácticas anticonceptivas. 
+
+# El numero ideal de hijos se modela con una log normal debido a que ajusta bien a la realidad 
+# como demostramos al principio del practico. 
+
+# El efecto de las practicas anticonceptivas disminuye en gran proporcion la probabilidad de tener
+# un hijo una vez es alcanzado el numero deseado.
+
+
 # Que significa que en el nuevo modelo tenemos dos probabilidades de concebir:
 # fecundabilidad y fecundabilidad residual?
+
+# Ahora nuestra fecundabilidad es cuando se dan los nacimientos deseados sin utilizar metodos anticonceptivos
+# en cambio la fecundabilidad residual son los nacimientos que ocurren por fallos de la anticoncepción
 
 
 # Ejercicio: Utilizando el modelo del proceso reproductivo en régimen de 
@@ -191,4 +203,26 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
 # describir los cambios introducidos en los parámetros del modelo para aproximar
 # una y otra distribución de tasas específicas. con n = 3000
 
+
+#n <- 10
+#ns <- 11
+#x0 <- 420
+#r <-  0.04
+#mu <- 22
+#su <- 1.1
+#mu_d <- 2.4 # Media del numero deseado de hijos
+#sd_d <- 1.1 # Desvio del numero deseado de hijos
+#c <- 0.1
+
+#gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
+
+plot_fx_hfd(dat = fx_es, cohorts = 1940, type = "lines")
+
+Sim_40 <- gen_hst_d(n=3000, ns=12, x0=400, r=0.02 , mu= 24, su=4, mu_d=1.7, sd_d=1.1, c=0.1)
+plot_fx(dat = Sim_40 ,points =  T)
+
+plot_fx_hfd(dat = fx_es, cohorts = 1970, type = "lines")
+
+Sim_70 <- gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 30, su=9, mu_d=0.8, sd_d=1, c=0.1)
+plot_fx(dat = Sim_70 ,points =  T)
 
