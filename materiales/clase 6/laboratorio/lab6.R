@@ -194,7 +194,7 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
 # fecundabilidad y fecundabilidad residual?
 
 # Ahora nuestra fecundabilidad es cuando se dan los nacimientos deseados sin utilizar metodos anticonceptivos
-# en cambio la fecundabilidad residual son los nacimientos que ocurren por fallos de la anticoncepción
+# en cambio la fecundabilidad residual es la probabilidad de concebir una vez ya se estan usanod los anticonceptivos, o sea, nacimientos no intencionales.
 
 
 # Ejercicio: Utilizando el modelo del proceso reproductivo en régimen de 
