@@ -173,5 +173,5 @@ add_legend(sd_vals, colors)
 
 tfr_dif_sd <- sapply(var_tfr_sd, function(x) x - ref_tfr_sd)
 
-plot(sd_vals, tfr_dif_sd)s
+plot(sd_vals, tfr_dif_sd)
 
