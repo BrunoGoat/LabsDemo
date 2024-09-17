@@ -83,12 +83,14 @@ fx_es <- read.table(file.path("datos","asfr_hfd.txt"), skip = 2, header=T,
 # Vamos a tomar como referencia empírica las fx de la cohorte de nacidas 
 # en 1940 en España
 
+#gen_hst_d(n, ns, x0, r, mu, su, md, sd, c)
+
 plot_fx_hfd(dat = fx_es, cohort = 1940, type = "points")
 
 # Simular las trayectorias reproductivas para la combinación de parámetros
 # que ajusta bien a los datos
 
-hst_ref <- 
+hst_ref <- gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 24, su=4, md=1.7, sd=1.1, c=0.1)
 
 # Graficar y guardar las tasa global de fecundidad simulada en "tfr_ref"
 tfr_ref <- plot_fx(hst_ref, lines  = T)
@@ -107,10 +109,10 @@ tfr_ref <- plot_fx(hst_ref, lines  = T)
 c_vals <- seq(0.01, 0.5, 0.05)
 
 # Lista con datos para cada uno de los valores de c
-hst_c_var <- 
+hst_c_var <- lapply(c_vals, function(x) gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 24, su=4, md=1.7, sd=1.1, c = x))
 
 # graficamos y guardamos la tasa global de fecundidad de la población referencia
-ref_tfr_c <- 
+ref_tfr_c <- plot_fx(hst_ref, lines  = T)
 
 # graficamos y guardamos la tasa global de fecundidad correspondiente
 # a los distintos valores de c
@@ -121,14 +123,13 @@ var_tfr_c <- lapply(1:length(c_vals), function(x) plot_fx(dat = hst_c_var[[x]],
 add_legend(c_vals, colors)
 
 # obtenemos las diferencia en la tasa global de fecundidad (TFR) 
-tfr_dif_c <- 
+tfr_dif_c <- sapply(var_tfr_c, function(x) x - ref_tfr_c)
 
 # graficamos
 plot(c_vals, tfr_dif_c)
 
 # Describir los resultados obtenidos.
-
-
+# Podemos ver como varia la tasa global de fecundidad al variar los valores de c, o sea, que cuando la probabilidad que falle el anticonceptivo es menor, (c es menor), la TFR disminuye tambien y viceversa, lo cual es logico, ya que las personas comienzan a usar anticonceptivos una vez que tienen el numero deseado de hijos, por eso nacen mas cuando el anticonceptivo falla ya que son nacimientos no deseados.
 
 
 #################################
@@ -136,38 +137,41 @@ plot(c_vals, tfr_dif_c)
 #################################
 md_vals <- seq(1, 5, 0.5)
 
-hst_md_var <- 
+hst_md_var <- lapply(md_vals, function(x) gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 24, su=4, md= x, sd=1.1, c = 0.1))
 
-ref_tfr_md <- 
+ref_tfr_md <- plot_fx(hst_ref, lines  = T)
 
 colors <- rainbow(length(md_vals))
-var_tfr_md <- 
+var_tfr_md <- lapply(1:length(md_vals), function(x) plot_fx(dat = hst_md_var[[x]],
+                                                           lines = T,
+                                                           col = colors[x]))
   
 add_legend(md_vals, colors)
 
-tfr_dif_md <- 
+tfr_dif_md <- sapply(var_tfr_md, function(x) x - ref_tfr_md)
 
 plot(md_vals, tfr_dif_md)
 
 # Describir los resultados obtenidos.
-
-
+# Cuando disminuye el numero deseado de hijos por mujer, la TFR tambien disminuye ya que se empiezan a usar anticonceptivos mas rapido, disminuyendo en gran medida la fecundabilidad antes de tiempo.
 
 
 ##################################
 # Desvío del nr deseado de hijos #
 ##################################
 sd_vals <- seq(0.5, 5, 0.5)
-hst_sd_var <- 
+hst_sd_var <- lapply(sd_vals, function(x) gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 24, su=4, md= 1.7, sd=x, c = 0.1))
 
-ref_tfr_sd <- 
+ref_tfr_sd <- plot_fx(hst_ref, lines  = T)
 
 colors <- rainbow(length(sd_vals))
-var_tfr_sd <- 
+var_tfr_sd <- lapply(1:length(sd_vals), function(x) plot_fx(dat = hst_sd_var[[x]],
+                                                             lines = T,
+                                                             col = colors[x]))
   
 add_legend(sd_vals, colors)
 
-tfr_dif_sd <- 
+tfr_dif_sd <- sapply(var_tfr_sd, function(x) x - ref_tfr_sd)
 
-plot(sd_vals, tfr_dif_sd)
+plot(sd_vals, tfr_dif_sd)s
 
