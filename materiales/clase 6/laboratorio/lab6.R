@@ -227,4 +227,3 @@ plot_fx_hfd(dat = fx_es, cohorts = 1970, type = "lines")
 
 Sim_70 <- gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 30, su=9, mu_d=0.8, sd_d=1, c=0.1)
 plot_fx(dat = Sim_70 ,points =  T)
-
