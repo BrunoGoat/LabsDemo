@@ -142,16 +142,18 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
   # tiempo de espera a la unión
   wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 #Se calcula el tiempo hasta la union en meses utilizando la distribucion log normal
   
-  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) # n vectores de los cuales se desprende la probabilidad de concebir de cada mujer
+  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) # n vectores de los cuales se desprende la probabilidad de concebir mes a mes de cada mujer
   
   dk <- round(rlnorm(n, meanlog = log(mu_d^2/ sqrt(mu_d^2+sd_d^2)),
-                        sdlog = sqrt(log(1 + sd_d^2/mu_d^2))),0) # Se simulan n numeros deseados de hijos
+                        sdlog = sqrt(log(1 + sd_d^2/mu_d^2))),0) # Se simulan n numeros deseados de hijos (en numeros enteros ya que no tiene sentido por ejemplo 2.5 hijos)
   
   maxt <- max(sapply(fi_it, length))
   
   for(t in 1:maxt){ 
     
-    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) # c es la probabilidad de que falle el anticonceptivo, con is estamos midiendo que mujeres tuvieron hijos, el c comienza a tener valor y peso en la expresion en el momento que las diferentes mujeres llegan al numero deseado de hijos y comienzan a usar anticonceptivos, con esto, baja mucho la probabilidad de concepcion aunque no la reduce a 0.
+    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) #Cada uno de los elementos de fi_it y vamos a crear un subset (aplicando la funcion [, esto crea el subset), y el subset se hace en la t, con esto extraemos la probabilidad de concebir de cada mujer en el momento t.
+    
+    #Mientras la condicion sea falsa, multiplicamos por 1, cuando es verdadera (la pareja alcanza el numero deseado de hijos), la pareja comienza a usar anticonceptivos, entonces en el modelo se empieza a multiplicar por c, reduciendo en gran medida la probabilidad de concebir pero no hasta 0 ya que el anticonceptivo no es 100% efectivo.
     
     if(length(is)!=0){ 
       
@@ -162,7 +164,7 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
       
       fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) # eliminamos la posibilidad desde que hubo concepción hasta que termine el periodo de no susceptibilidad
       
-      k <- as.vector(table(factor(id, levels = 1:n))) #Cantidad efectiva de hijos por mujer
+      k <- as.vector(table(factor(id, levels = 1:n))) #Cantidad efectiva de hijos de cada mujer en cada momento t
       
     }
     
@@ -214,11 +216,11 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
 #sd_d <- 1.1 # Desvio del numero deseado de hijos
 #c <- 0.1
 
-#gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
+#gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c)
 
 plot_fx_hfd(dat = fx_es, cohorts = 1940, type = "lines")
 
-Sim_40 <- gen_hst_d(n=3000, ns=12, x0=400, r=0.02 , mu= 24, su=4, mu_d=1.7, sd_d=1.1, c=0.1)
+Sim_40 <- gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 24, su=4, mu_d=1.7, sd_d=1.1, c=0.1)
 plot_fx(dat = Sim_40 ,points =  T)
 
 plot_fx_hfd(dat = fx_es, cohorts = 1970, type = "lines")
