@@ -77,7 +77,7 @@ gen_hst_nd <- function(n = 5000,
                              nac = rep(table(hst$id), table(hst$id)),
                              paridad = sequence(table(hst$id))))
   
-  hst$nd <- #completar
+  hst$nd <- hst$paridad > rep(dk,k) #completar
     
     return(hst)
   
@@ -90,11 +90,14 @@ gen_hst_nd <- function(n = 5000,
 out <- gen_hst_nd()
 
 fx <- plot_fx(dat = out, return_fx = T)
-d_fx <- plot_fx(, return_fx = T, lines = T, col = "blue")
-nd_fx <- plot_fx(, return_fx = T, lines = T, col = "red")
+d_fx <- plot_fx(out[out$nd==0], return_fx = T, lines = T, col = "blue")
+nd_fx <- plot_fx(out[out$nd==1], return_fx = T, lines = T, col = "red")
 
 
 # Reducir la eficacia de los anticonceptivos y comparar resultados
+out <- gen_hst_nd(c=0.1)
 
-
+fx <- plot_fx(dat = out, return_fx = T)
+d_fx <- plot_fx(out[out$nd==0], return_fx = T, lines = T, col = "blue")
+nd_fx <- plot_fx(out[out$nd==1], return_fx = T, lines = T, col = "red")
 
