@@ -15,14 +15,14 @@ dx <- c(71.55, 1.22, 62.91,59.60,0.07,
 sort(dx)
 
 # numero de observaciones
-N <- 
+N <- 10
 
 # vamos a realizar los cálculos para los intervalos
 # que comienzan en las siguientes edades exactas x:
-x <-
+x <- c(0, 1, 5, 10, 20, 30, 40, 50, 60, 70)
 
 # tamaño de los intervalos - ver diff()
-n <- 
+n <- diff(x, lag=1)
   
 ######################################  
 # defunciones entre edad x, x+n      #
@@ -30,10 +30,10 @@ n <-
 # Empezamos por generar la primera columna de nuestra tabla: ndx
 
 # Intervalo en el que se registra cada defunción - ver findinterval()
-di <- 
+di <- findInterval(sort(dx), x)
   
 # defunciones en cada intervalo
-ndx <- 
+ndx <- as.vector(table(factor(di, levels = 1:length(x))))
   
 # Creamos la tabla con las primeras dos columnas:
 # edad exacta y defunciones
@@ -45,7 +45,7 @@ lt
 #############################
 # Para esto nos puede ayudar calcular la suma acumulada 
 # de defunciones a edad exacta x
-lx <- 
+lx <- N - c(0, cumsum(ndx[1:9]))
   
 # añadimos la columna lx a la tabla
 lt <- cbind(lt, lx)
@@ -70,10 +70,10 @@ lt
 #####################################################
 # comenzamos calculando los años persona aportados por cada fallecimiento en 
 # el intervalo que sucede el fallecimiento
-ap <- 
+ap <- ((lx - ndx) * n2) + c(dx-x[di])
   
 # sumamos estos años persona por intervalo - ver by()
-sum_ap <- 
+sum_ap <- by
   
 
 Lx <- 
