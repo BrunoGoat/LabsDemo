@@ -5,7 +5,7 @@
 # 17 de Septiembre de 2024                                                     #   
 ################################################################################
 
-source("plot_fun.R")
+source("plot_fun.R") #Uso el del lab 7 porque no encontre en el lab8
 
 ###############################################################################
 # Nacimientos No Deseados                                                     #
@@ -90,14 +90,21 @@ gen_hst_nd <- function(n = 5000,
 out <- gen_hst_nd()
 
 fx <- plot_fx(dat = out, return_fx = T)
-d_fx <- plot_fx(out[out$nd==0], return_fx = T, lines = T, col = "blue")
-nd_fx <- plot_fx(out[out$nd==1], return_fx = T, lines = T, col = "red")
+d_fx <- plot_fx(dat = out[out$nd==F, ], return_fx = T, lines = T, col = "blue")
+nd_fx <- plot_fx(out[out$nd==T, ], return_fx = T, lines = T, col = "red")
 
+# Podemos ver en azul la fecundidad de los hijos deseados, en rojo vemos la
+# fecundidad residual o sea, la de los hijos no deseados que nacen por fallo
+# de anticonceptivo y en negro podemos ver la suma de ambas obteniendo la
+# fecundidad total
 
 # Reducir la eficacia de los anticonceptivos y comparar resultados
-out <- gen_hst_nd(c=0.1)
+out <- gen_hst_nd(c=0.2)
 
 fx <- plot_fx(dat = out, return_fx = T)
-d_fx <- plot_fx(out[out$nd==0], return_fx = T, lines = T, col = "blue")
-nd_fx <- plot_fx(out[out$nd==1], return_fx = T, lines = T, col = "red")
+d_fx <- plot_fx(out[out$nd==F, ], return_fx = T, lines = T, col = "blue")
+nd_fx <- plot_fx(out[out$nd==T, ], return_fx = T, lines = T, col = "red")
 
+# En este nuevo grafico podemos ver como al aumentar la probabilidad de que 
+# falle el anticonceptivo aumenta la fecundidad residual, en este ejemplo incluso
+# iguala la fecundidad de los hijos deseados.
