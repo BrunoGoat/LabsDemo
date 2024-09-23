@@ -24,18 +24,22 @@ source("plot_fun.R") # funciones para graficar
 n <- 10^6
 fi <- 0.2 # fecundabilidad: probabilidad mensual de concebir 
 m <- 0:30 # observamos concepciones desde el 1er al 30vo mes desde el casamiento
-gini_props <- ((1 -fi)^{m})*fi  # completar
+gini_props <- ((1 -fi)^{m})*fi  #completar
 gini <- as.data.frame(cbind(meses = m, gini_props))
 plot(gini)
 
 # Describa brevemente lo que se observa en el gráfico
-# Gini sugiere que la probabilidad de tener un hijo es de 0.20 en el momento 0
-# y cae a mas de la mitad 10 meses despues. Luego sigue cayendo y se mantiene 
-# en una probabilidad muy cercana a 0
+
+
+# Gini sugiere que la probabilidad de tener un hijo es de 0.20 en el 
+# momento/mes 0 y a medida que pasa el tiempo la probabilidad disminuye, por
+# ejemplo, cae mas de la mitad 5 meses despues. Luego sigue cayendo y se mantiene 
+# en una probabilidad muy cercana a 0.
 
 # Ahora simulamos meses hasta la primera concepción a partir de una 
 # distribución geométrica (distribución binomial negativa con un éxito)
-meses <- rnbinom(n = n, size = 1, prob = fi)  # completar
+
+meses <- rnbinom(n = n, size = 1, prob = fi) #completar
 
 nbinom <- as.data.frame(prop.table(table(meses))) 
 names(nbinom)[2] <- "nbinom_props"
@@ -57,8 +61,8 @@ legend(10, 0.15, legend = c("Modelo Gini", "Distribución Geométrica"),
 
 # Describa brevemente lo que se observa en el gráfico
 
-# Se nos muestra que el modelo Gini y la distribución geometrica tienen 
-# resultados muy similares
+# En el nuevo grafico podemos ver que el modelo de Gini parece tener resultados
+# muy similares a la simulación que hicimos con la distribución geometrica.
 
 
 # Ahora que sabemos como simular el tiempo de espera hasta una 1era concepción 
@@ -74,14 +78,17 @@ alpha <- mu * ((mu * (1 - mu)) / (sigma^2) - 1)
 beta <- (1 - mu) * ((mu * (1 - mu)) / (sigma^2) - 1)
 
 # Simular valores a partir de nuestra distribución beta
-fi_i <- beta(alpha, beta) # completar
+fi_i <- rbeta(n, alpha, beta) # completar
 
 # Graficar
 hist(fi_i, breaks = 50, main = "", xlab = "Fecundabilidad")
 
 # Describa brevemente lo que se observa en el gráfico
 
-
+# Vemos como la tasa de fecundabilidad varia entre las diferentes mujeres,
+# siendo lo mas frecuente al rededor de 0.14-0.2 y luego se aprecia una cola
+# hacia la derecha en la grafica mostrando que hay mujeres con mayor fecundidad
+# pero cada vez con menor frecuencia.
 
 # Ejercicio:
 # Simular proporciones de nacimientos entre los meses 10-30 a partir de una
@@ -114,8 +121,24 @@ legend(20, 0.18, legend = c("Modelo Gini",
 
 # Que diferencia presenta el modelo que considera la heterogeneidad 
 # de las mujeres con respecto a su fecundabilidad?
+
+# Se aprecia que en nuestro nuevo modelo con heterogeneidad la proporcion de
+# los nacimientos es ligeramente menor a los realizados anteriormente, y que a 
+# partir de aproximadamente pasados los 10 meses tras la union nuestro modelo 
+# con heterogeneidad comienza a tener mayor proporción de nacimientos que
+# nuestro modelo Gini y la geometrica.
+
 # Por qué se observa esa diferencia?
 
+# Se observa ya que ahora hay diferentes tasas de fecundabilidad en cada mujer,
+# esto hace que en un principio haya muchas mujeres con una tasa menor a la 
+# de 0.2 que propusimos en nuestros otros modelos.
+# (Otras tienen mas pero no son suficientes como para compensar) 
+# Eso explica la leve caida del principio, y cuando se compensa pasados los 10
+# meses es debido a la alta fecundabilidad de las otras mujeres, ademas de que
+# necesariamente al ser una densidad debe integrar uno bajo la curva por ende
+# es lógico pensar que si hubo una disminucion, tendras que "compensar" esa
+# área perdida.
 
 
 ###############################################################
@@ -166,8 +189,8 @@ plot_hst(hst, c(0.5, n), n)
 # Ejercicio:
 # Simular la edad al segundo nacimiento para este cohorte de mujeres. Graficar.
 
-wt_2c <- # completar 
-wt_2b <- # completar 
+wt_2c <- wt_1b + ns + wt_1c # completar 
+wt_2b <- wt_2c + 9 # completar 
 
 hst <- as.data.frame(cbind(id = rep(1:n, 2),
                            edad = c(wt_1b, wt_2b)/12,
@@ -229,7 +252,7 @@ gen_hst <- function(n, fi, ns, mu, su){
 # mu_u = 20 
 # sd_u = 1.1
 
-ls_hst <- # completar
+ls_hst <- gen_hst(n = 8, fi = 0.2, ns = 6, mu = 20, su = 1.1) # completar
   
 # graficamos
 for (i in 1:length(ls_hst)){

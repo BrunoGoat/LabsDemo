@@ -29,7 +29,8 @@ gen_hst_t <- function(n, ns, x0, r, mu, su, id = vector(), wt_c = vector()){
   #plot(prop.table(table(round(rlnorm(10^6, meanlog = log(mu*12), sdlog = log(1.1)),0))))
   
   # describa lo que se observa en el gráfico
-  
+  # Vemos la distribucion de la probabilidad del tiempo de union, siendo los 
+  # casos mas frecuentes al rededor de los 240 meses (20 años)
   
   # Tomamos la fecundabilidad en los meses luego del mes a la union para cada mujer en n
   fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)])
@@ -96,7 +97,7 @@ ns = 11
 mu = 18
 su = 1.1
 
-hst_ref <- gen_hst_t(n, ns, x0, r, mu, su, id = vector(), wt_c = vector())# completar
+hst_ref <- gen_hst_t(n = n, ns = ns , x0= x0 , r = r, mu = mu, su = su , id = vector(), wt_c = vector())# completar
 
 plot_sum_fx <- function(dat, lines = F, ...){
   fx <- table(factor(floor(dat$edad), levels = 10:50)) / max(dat$id)
@@ -134,7 +135,10 @@ var_tfr_ns <- lapply(hst_ns_var, plot_sum_fx, lines = T, col = "red") #completar
 
 # Describa lo que se observa en el gráfico.
 
-# En la grafica podemos ver los diferentes valores de ns en las lineas rojas, las tasas mas grandes de natalidad son los valores mas bajos de ns, en este caso el valor mas bajo es 1, las tasas mas bajas son para los ns mas altos.
+# En la grafica podemos ver los diferentes valores de ns en las lineas rojas, 
+# las tasas mas grandes de natalidad son los valores mas bajos de ns ya que con
+# periodos de no suceptibilidad bajos hay mas tiempo para concepciones, en este 
+# caso el valor mas bajo es 6, las tasas mas bajas son para los ns mas altos.
 
 
 # Ahora calculamos la diferencia entre las cohortes simuladas
@@ -146,7 +150,12 @@ tfr_dif_ns <- sapply(var_tfr_ns, function(x) x - ref_tfr)# completar usando sapp
 # y graficamos
 plot(ns_vals, tfr_dif_ns)
 
-# Describa lo que se observa en el gráfico, vemos las distintas diferencias de la tasa global de fecundidad con respecto a la tasa original cuando ns era igual a 11.
+# Describa lo que se observa en el gráfico 
+
+# Vemos las distintas diferencias de la tasa global de fecundidad con respecto 
+# a la tasa original cuando ns era igual a 11, con el menor ns (6) podemos ver
+# que la tasa de fecundidad es mayor en 2 unidades y con el mayor ns (24) la 
+# tfr es menor en 3 unidades
 
 
 
@@ -163,6 +172,10 @@ var_tfr_mu <- lapply(hst_mu_var, plot_sum_fx, lines = T, col = "red") #completar
   
 # Describa lo que se observa en el gráfico
 
+# En la grafica podemos ver los diferentes valores de mu en las lineas rojas,
+# o sea las diferentes medias de edad en meses de las mujeres con medias mas
+# bajas tendremos mas concepciones porque hay mas tiempo y mejor fecundabilidad
+# (ya que depende negativamente de la edad)
 
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
@@ -173,7 +186,7 @@ plot(mu_vals, tfr_dif_mu)
 
 # Describa lo que se observa en el gráfico
 
-
+# Vemos como con mu's mayores cae la tfr por lo explicado anteriormente
 
 ########################################
 # desvio estdr. dist. edad a la union #
@@ -187,6 +200,13 @@ var_tfr_su <- lapply(hst_su_var, plot_sum_fx, lines = T, col = "red")
 
 # Describa lo que se observa en el gráfico
 
+# Podemos ver los diferentes desvios de la edad de union, cuando el desvio es 
+# menor significa que todas las parejas se unen en un tiempo cercano unas de 
+# otras y como nuestro modelo contempla las concepciones a partir de la union
+# podemos ver como con un desvio bajo el aumento de la probabilidad tiene una
+# gran pendiente debido a que todas las parejas comienzan a concebir al mismo 
+# tiempo, con mayor desvio, unas parejas comienzan antes y otras despues 
+# causando una pendiente no muy inclinada
 
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
@@ -197,6 +217,10 @@ plot(su_vals, tfr_dif_su)
 
 # Describa lo que se observa en el gráfico
 
+# Los diferentes valores del desvio parecen apensas afectar la tfr (<0.1) ya 
+# las concepciones suceden en practicamente la misma medida con la unica 
+# diferencia es que tan alejadas en el tiempo estan las concepciones de una 
+# pareja y otra.
 
 
 #################################################
@@ -211,6 +235,8 @@ var_tfr_x0 <- lapply(hst_x0_var, plot_sum_fx, lines = T, col = "red")
   
 # Describa lo que se observa en el gráfico
 
+# Con una caida de la fecundabilidad mas temprana vemos como la probabilidad 
+# comienza a caer antes en el tiempo con respecto a x0 mayores
 
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
@@ -221,19 +247,25 @@ plot(x0_vals, tfr_dif_x0)
 
 # Describa lo que se observa en el gráfico
 
+# Vemos como con menores valores de x0 o sea caidas de la fecundabilidad mas 
+# temprana afectan a la tfr debido a que se dispone de mucho menos probabilidad
+# de lograr una concepcion durante mas tiempo.
+
 #################################################
 # Pendiente caída de la fecundabilidad          #
 #################################################
 r_vals <- seq(0.02, 0.1, 0.005)
 
-hst_r_var <- lapply(r_vals, function(x) gen_hst_t(n = n, ns = ns, x0 = x0,r = x,mu =  mu,su = su))
+hst_r_var <- lapply(r_vals, function(x) gen_hst_t(n = n, ns = ns, x0 = x0,r = 0.1,mu =  mu,su = su))
   
 plot_sum_fx(hst_ref, ylim = c(0,0.7))
 var_tfr_r <- lapply(hst_r_var, plot_sum_fx, lines = T, col = "red")
   
 # Describa lo que se observa en el gráfico
 
-
+# Vemos como una vez se llega a una edad avanzada con una r alta la fecundabilidad
+# cae mucho y rapidamente disponiendo de menos tiempo para la concepcion
+# por ende esto desencadena una caida de la tfr,y viceversa
 
 # Ahora calculamos la diferencia con respecto a la tasa global de fecundidad (tfr)
 
@@ -243,4 +275,4 @@ plot(r_vals, tfr_dif_r)
 
 # Describa lo que se observa en el gráfico
 
-
+# Vemos que a mayor r, menor tfr por lo explicado anteriormente

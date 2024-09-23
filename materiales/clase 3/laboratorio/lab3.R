@@ -6,7 +6,8 @@
 ################################################################################
 
 # cargar datos de Huteritas
-fx_ht <- read.csv("asfrs_ht.csv", header = T) 
+fx_ht <- read.csv(file.path("datos","asfrs_ht.csv"), header=T)
+                                                         
 
 # En el laboratorio anterior comenzamos a trabajar con un modelo del proceso
 # reproductivo para una cohorte, es decir, un modelo que simula las
@@ -17,12 +18,14 @@ fx_ht <- read.csv("asfrs_ht.csv", header = T)
 
 gen_hst <- function(n, fi, ns, mu, su){
   
-  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 # 
+  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 #tiempo en meses hasta la union 
   
-  wt_c <- lapply(1:50, function(x) rnbinom(n, 1, fi)) #
+  wt_c <- lapply(1:50, function(x) rnbinom(n, 1, fi)) # tiempo en meses hasta 
+                                                      # las diferentes concepciones
   
   wt_b <- list()
-  wt_b[[1]] <- wt_u + wt_c[[1]] + 9 #
+  wt_b[[1]] <- wt_u + wt_c[[1]] + 9 #Tiempo en meses del primer nacimiento de 
+                                    #cada mujer
   
   hst <- list()
   hst[[1]] <- as.data.frame(cbind(id = 1:n,
@@ -31,13 +34,22 @@ gen_hst <- function(n, fi, ns, mu, su){
   
   for(i in 2:50){
     
-    wt_b[[i]] <- wt_b[[i-1]] + ns + wt_c[[i]] + 9 #
+    wt_b[[i]] <- wt_b[[i-1]] + ns + wt_c[[i]] + 9 # Tiempo en meses del 
+                                                  # nacimiento x, siendo x > 1
     
-    nid <- which(wt_b[[i]]>50*12) #
+    nid <- which(wt_b[[i]]>50*12) # Buscamos que mujeres tuvieron hijos despues 
+                                  # de los 50 años
     
-    wt_b[[i]][nid] <- NA 
+    wt_b[[i]][nid] <- NA # Convertimos los hijos despues de los 50 años en 
+                         # datos NA (ya que 50 años lo establecimos como limite)
     
-    if(sum(is.na(wt_b[[i]])) == n){break} #
+    if(sum(is.na(wt_b[[i]])) == n){break} 
+    # Nos fijamos si el tiempo de espera hasta el nacimiento del niño i es Na, 
+    # o sea, si nació despues de los 50 años, al hacer la suma y compararla con
+    # n estamos viendo si todos los nacimientos que ocurrieton en la iteracion
+    # numero i ya superan los 50 años, con eso ya no tenemos informacion 
+    # relevante para seguir en el bucle y salimos con break.
+    
     
     hst[[i]] <- as.data.frame(cbind(id = rep(1:n,i),
                                     edad = unlist(wt_b)/12,
@@ -106,15 +118,17 @@ legend(460, 0.9, legend = "Modelo de Coale & Trussell",
 # Definimos visualmente unos valores de los parámetros que producen una curva que 
 # se ajusta al modelo de Coale y Trussell
 
-x0_ini <- 38*12      # punto de inflexión ("ini"  = valor inicial aproximado) 
+x0_ini <- 38*12      # punto de inflexión ("ini" = valor inicial aproximado) 
 r_ini  <- 0.022      # tasa
 age <- seq(10*12, 50*12,1)
 
 lines(age, 1 / (1 + exp(r_ini*(age-x0_ini))), col = "red", lwd = 2)
 
 # Describir brevemente lo que se observa en el gráfico 
-# En el grafico podemos apreciar la caida de la fecundidad relativa, con respecto 
-# a la edad en meses
+
+# En el grafico podemos apreciar la caida de la fecundidad con respecto a los
+# meses, esto es, hacer que ahora la fecundabilidad tenga una relacion negativa 
+# con la edad despues de superar cierta cantidad de meses.
 
 
 
@@ -150,36 +164,55 @@ gen_hst_t <- function(n, ns, x0, r, mu, su){
   id = vector()
   wt_c = vector()
   
-  meses <- 1:(50*12) #     Meses hasta 50 años
+  meses <- 1:(50*12) # Meses hasta 50 años
   
   # fecundabilidad
-  fi_t <- 0.2 / (1 + exp(r*(meses-x0))) #     Ponderamos la fecundabilidad  a lo largo del tiempo haciendo que dependa de la edad
-  fi_t[max(meses)] <- 0 # Forzamos que no se produzcan nacimientos, despues de la edad maxima (50)
+  fi_t <- 0.2 / (1 + exp(r*(meses-x0))) # Ponderamos la fecundabilidad  a lo 
+                                        # largo del tiempo haciendo que dependa 
+                                        # de la edad
+  
+  fi_t[max(meses)] <- 0 # Forzamos que no se produzcan nacimientos
+                        # despues de la edad maxima (50)
   #plot(meses,fi_t)
   
-  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 # Esta log normal nos dice los diferentes tiempos de union en meses
+  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 
+  # Esta log normal nos dice los diferentes tiempos de union en meses
   
   
-  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) # Aca iteramos para tener vectores con el decrecimiento de la fecundidad
+  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) 
+  #Iteramos para tener n vectores con el decrecimiento de la fecundidad
   
-  maxt <- max(sapply(fi_it, length)) # Con esto nos quedamos el el vector mas largo, o sea la union mas temprana
+  maxt <- max(sapply(fi_it, length)) 
+  #Con esto nos quedamos el vector mas largo, o sea la union mas temprana.
   
   
   
   
   for(t in 1:maxt){ 
     
-    is <- which(runif(n) < sapply(fi_it, function(x) x[t])) # n uniformes con valores entre 0 y 1, y lo compara con la probabilidad de concebir en el momento t de cada una de las mujeres (sapply), con eso sabremos si hay concepcion o no, el which nos indica la posicion en el vector, o sea, que mujer/es es/son la del exito.
+    is <- which(runif(n) < sapply(fi_it, function(x) x[t])) 
+    # Comparamos n uniformes con valores entre 0 y 1 con la probabilidad de 
+    # concebir en el momento t de cada una de las mujeres (sapply),
+    # con eso sabremos si hay concepcion o no, el which nos indica la posicion
+    # en el vector, o sea, que mujer/es es/son la del exito, o sea, concepcion.
     
     if(length(is)!=0){ 
       
-      wts <- sapply(is, function(x) (wt_u[x]-1) + t) # Si hubieron concepciones, vamos a generar tiempo hasta esa concepcion, indexamos el momento en el que se unieron y sumamos t, ya que ese es el momento en que se da la concepcion, conciben en el mismo momento que se unieron, o sea igual a wt_u = wt_1c = wts ( segun t )
+      wts <- sapply(is, function(x) (wt_u[x]-1) + t)
+      # Si hubieron concepciones, vamos a generar tiempo hasta esa concepcion,
+      # indexamos el momento en el que se unieron y sumamos t, ya que ese es el
+      # momento en que se da la concepcion, conciben en el mismo momento que se
+      # unieron, o sea igual a wt_u = wt_1c = wts ( segun t )
       
       id <- c(id, is) 
       wt_c <- c(wt_c, wts)
       
       
-      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) # Iterar sobre el vector de las mujeres que tuvieron una concepcion, desde t hasta t+9+ns eso sea NA, no hay probabilidad de concepcion en ese tiempo. Quitamos los exitos que sucedieron en el periodo de embarazo y no suceptibilidad
+      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) 
+      # Iterar sobre el vector de las mujeres que tuvieron una concepcion, 
+      # desde t hasta t+9+ns para que eso sea NA ya que no hay probabilidad de 
+      # concepcion en ese tiempo. O sea quitamos los exitos que sucedieron en 
+      # el periodo de embarazo y no suceptibilidad
       
     }
     
@@ -200,7 +233,8 @@ gen_hst_t <- function(n, ns, x0, r, mu, su){
 # 20 años (y desvío estandar 1.1) utilizando el modelo con fecundabilidad
 # dependiente de t), graficar.
 
-hst_t <- gen_hst_t(5000, 6, x0, r, 20, 1.1 ) # completar (Parametros perfectos ns 11, mu u, 18, x0 = 420, r= 0,028)
+hst_t <- gen_hst_t(5000, 6, x0, r, 20, 1.1 ) # completar
+
 
 # graficamos sobre los resultados anterirores
 plot(fx_ht, col = "violet", pch = 16, ylim = c(0,0.7))
@@ -213,27 +247,26 @@ fx_t <- table(factor(floor(hst_t$edad), levels = 10:50)) / max(hst_t$id)
 points(10:50, as.data.frame(fx_t)[,2], col = "blue")
 
 # Describir lo que se observa en el gráfico. 
-# A qué se deben las diferencias entre los modelos?  
-
-
-
-# El primer modelo (rojo) tenia siempre la misma fecundidad sin que cambie con la edad por eso se mantiene arriba a pesar del tiempo, el segundo si lo contempla, por eso decae al pasar el tiempo
-
-
+# A qué se deben las diferencias entre los modelos? 
 # A que se deben las diferencias entre el modelo más reciente
 # y los datos de los Huteritas?
 
-
+# El primer modelo (rojo) tenia siempre la misma fecundidad sin que cambie con
+# la edad por eso se mantiene arriba a pesar del tiempo, el segundo si lo 
+# contempla, por eso cae al pasar el tiempo, el rosado son nuestros datos leidos,
+# podemos ver que aun nuestro modelo no es perfecto pero nos aproximamos mejor.
 
 # Ejercicio:
 
 # Buscar una combinación de parámetros que genere unas f(x) simuladas similares
 # a los datos de la cohorte de Huteritas.
 
-hst_ht_sim <-  # completar
+hst_ht_sim <- gen_hst_t(n = 5000, ns = 11, x0 = 420 , r = 0.028 , mu = 18, su = 1.1 )  
   
-  # graficamos sobre los resultados anteriores
-  plot(fx_ht, col = "violet", pch = 16, ylim = c(0,0.7))
+# graficamos sobre los resultados anteriores
+plot(fx_ht, col = "violet", pch = 16, ylim = c(0,0.7))
+
 fx_ht_sim <- table(factor(floor(hst_ht_sim$edad), levels = 10:50)) / max(hst_ht_sim$id)
+
 points(10:50, as.data.frame(fx_ht_sim)[,2], col = "red")
 

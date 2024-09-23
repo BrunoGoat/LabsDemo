@@ -24,30 +24,30 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, md, sd, c){
   #plot(edad,fi_t)
   
   # tiempo de espera a la unión
-  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 #
+  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 
   
-  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) #
+  fi_it <- lapply(1:n, function(x) fi_t[wt_u[x]:length(fi_t)]) 
   
   dk <- round(rlnorm(n, meanlog = log(md^2/ sqrt(md^2+sd^2)),
-                     sdlog = sqrt(log(1 + sd^2/md^2))),0) #
+                     sdlog = sqrt(log(1 + sd^2/md^2))),0) 
 
   maxt <- max(sapply(fi_it, length))
   
   for(t in 1:maxt){ 
     
-    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) #  
+    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk))   
     
     if(length(is)!=0){ 
       
-      wts <- sapply(is, function(x) (wt_u[x]-1) + t) # 
+      wts <- sapply(is, function(x) (wt_u[x]-1) + t) 
       
       id <- c(id, is) 
       wt_c <- c(wt_c, wts)
       
-      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) #
+      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)})
       
-      k <- as.vector(table(factor(id, levels = 1:n))) #
-      
+      k <- as.vector(table(factor(id, levels = 1:n))) 
+    
     }
     
   }
@@ -129,7 +129,15 @@ tfr_dif_c <- sapply(var_tfr_c, function(x) x - ref_tfr_c)
 plot(c_vals, tfr_dif_c)
 
 # Describir los resultados obtenidos.
-# Podemos ver como varia la tasa global de fecundidad al variar los valores de c, o sea, que cuando la probabilidad que falle el anticonceptivo es menor, (c es menor), la TFR disminuye tambien y viceversa, lo cual es logico, ya que las personas comienzan a usar anticonceptivos una vez que tienen el numero deseado de hijos, por eso nacen mas cuando el anticonceptivo falla ya que son nacimientos no deseados.
+# En el primer grafico podemos ver como para mayores niveles de c tenemos mas
+# probabilidad de fecundabilidad a partir de aproximadamente los 24 años, donde
+# parece que la mayoria de parejas ya alcanzó su numero deseado de hijos, si
+# la probabilidad de que falle el anticonceptivo es muy alta van a comenzar a 
+# haber muchas concepciones no deseadas, para menores valores de c las parejas
+# tendran un numero muy similar al de su numero deseado de hijos.
+
+# En el segundo grafico se puede apreciar esta observacion viendo que con c 
+# mayor la tfr tambien crece por lo explicado anteriormente.
 
 
 #################################
@@ -148,12 +156,18 @@ var_tfr_md <- lapply(1:length(md_vals), function(x) plot_fx(dat = hst_md_var[[x]
   
 add_legend(md_vals, colors)
 
+
 tfr_dif_md <- sapply(var_tfr_md, function(x) x - ref_tfr_md)
 
 plot(md_vals, tfr_dif_md)
 
 # Describir los resultados obtenidos.
-# Cuando disminuye el numero deseado de hijos por mujer, la TFR tambien disminuye ya que se empiezan a usar anticonceptivos mas rapido, disminuyendo en gran medida la fecundabilidad antes de tiempo.
+
+# Con nuestro modelo implementando los anticonceptivos se tendra un numero de 
+# hijos similar al deseado, por ende con una media de hijos deseados mayor se
+# tendra una mayor probabilidad de concepcion durante mas tiempo y viceversa,
+# eso lo podemos ver reflejado en el segundo grafico donde con mayor md tendremos
+# mayor tfr
 
 
 ##################################
@@ -175,3 +189,8 @@ tfr_dif_sd <- sapply(var_tfr_sd, function(x) x - ref_tfr_sd)
 
 plot(sd_vals, tfr_dif_sd)
 
+# Describir los resultados obtenidos.
+
+# Se puede apreciar en los graficos que el desvio del numero deseado de hijos
+# no parece afectar tan en gran medida como nuestros otros parámetros, sin
+# embargo cuando el desvio es mayor, tenemos que la tfr baja y viceversa

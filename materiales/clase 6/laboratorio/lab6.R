@@ -44,8 +44,8 @@ plot_fx_hfd(dat = fx_es, cohorts = 1940:1970, type = "lines")
 
 # A medida que las cohortes son mas recientes vemos como se traslada el maximo 
 # de la fecundidad desde los 20 hasta al rededor de los 30, y el maximo de la 
-# tasa de fecundidad es mucho mas bajo, es incluso la mitad. Se reduce el nivel 
-# y hay un aplazamiento de la fecundidad.
+# tasa de fecundidad es mucho mas bajo, es incluso la mitad. En definitiva
+# se reduce el nivel y hay un aplazamiento de la fecundidad.
 
 
 #######################################################
@@ -82,7 +82,7 @@ plot(x = obs_d$nr, y = obs_d$freq/sum(obs_d$freq) , type = "p")
 # Describa brevemente lo que se observa en el gráfico
 
 # En el grafico podemos ver las proporciones de las preferencias de las personas
-# para diferentes cantidades de hijos, los mas repetidos son 1, 2, 3 
+# para diferentes cantidades de hijos, los mas repetidos son 1, 2, 3 y 4
 
 # Vamos a modelar el número deseado de hijos con una distirbución lognormal. 
 # Para esto vamos a simular 1000 números aleatorios de una distribución lognromal.
@@ -102,7 +102,8 @@ lines(table(sim_d)/sum(table(sim_d)), type = "p",
 
 
 # Describir los que se observa en el gráfico
-# Vemos que ajusta bastante bien con nuestro grafico inicial
+
+# Vemos que nuestra simulación es muy parecida a nuestros datos iniciales
 
 # Ahora que comprobamos que la distribución lognormal ajusta bien los datos del 
 # número ideal de hijos, podemos utilizar esta distribución para asignar
@@ -151,9 +152,18 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
   
   for(t in 1:maxt){ 
     
-    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) #Cada uno de los elementos de fi_it y vamos a crear un subset (aplicando la funcion [, esto crea el subset), y el subset se hace en la t, con esto extraemos la probabilidad de concebir de cada mujer en el momento t.
+    is <- which(runif(n) < sapply(fi_it,`[`, t) * c^(k >= dk)) 
+    #Vamos a cada uno de los elementos de fi_it y vamos a crear un subset 
+    #(aplicando la funcion [, esto crea el subset), y el subset se hace en t, 
+    # con esto extraemos la probabilidad de concebir de cada mujer en el 
+    # momento t.
     
-    #Mientras la condicion sea falsa, multiplicamos por 1, cuando es verdadera (la pareja alcanza el numero deseado de hijos), la pareja comienza a usar anticonceptivos, entonces en el modelo se empieza a multiplicar por c, reduciendo en gran medida la probabilidad de concebir pero no hasta 0 ya que el anticonceptivo no es 100% efectivo.
+    # Mientras la condicion k >= dk sea falsa, multiplicamos por 1, cuando es 
+    # verdadera (la pareja alcanza el numero deseado de hijos), la pareja 
+    # comienza a usar anticonceptivos, entonces en el modelo se empieza a 
+    # multiplicar por c, que es la probabilidad de que falle el anticonceptivo,
+    # reduciendo en gran medida la probabilidad de concebir pero no hasta 0 
+    # ya que el anticonceptivo no es 100% efectivo.
     
     if(length(is)!=0){ 
       
@@ -162,9 +172,12 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
       id <- c(id, is) 
       wt_c <- c(wt_c, wts)
       
-      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) # eliminamos la posibilidad desde que hubo concepción hasta que termine el periodo de no susceptibilidad
+      fi_it[is] <- lapply(fi_it[is], function(x){x[t:(t+9+ns)] <- NA; return(x)}) 
+      # eliminamos los nacimientos que ocurrieron durante el embarazo y el 
+      # periodo de no suceptibilidad
       
-      k <- as.vector(table(factor(id, levels = 1:n))) #Cantidad efectiva de hijos de cada mujer en cada momento t
+      k <- as.vector(table(factor(id, levels = 1:n))) 
+      #Cantidad efectiva de hijos de cada mujer en cada momento t
       
     }
     
@@ -183,18 +196,21 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
 # Ejercicio: Describir como se modela el número ideal de hijos y el efecto 
 # de las prácticas anticonceptivas. 
 
-# El numero ideal de hijos se modela con una log normal debido a que ajusta bien a la realidad 
-# como demostramos al principio del practico. 
+# El numero ideal de hijos se modela con una log normal debido a que ajusta 
+# bien a la realidad como demostramos al principio del practico. 
 
-# El efecto de las practicas anticonceptivas disminuye en gran proporcion la probabilidad de tener
-# un hijo una vez es alcanzado el numero deseado.
+# El efecto de las practicas anticonceptivas disminuye en gran proporcion (no 0) 
+# la probabilidad de tener un hijo una vez es alcanzado el numero deseado de 
+# hijos.
 
 
 # Que significa que en el nuevo modelo tenemos dos probabilidades de concebir:
 # fecundabilidad y fecundabilidad residual?
 
-# Ahora nuestra fecundabilidad es cuando se dan los nacimientos deseados sin utilizar metodos anticonceptivos
-# en cambio la fecundabilidad residual es la probabilidad de concebir una vez ya se estan usanod los anticonceptivos, o sea, nacimientos no intencionales.
+# Ahora nuestra fecundabilidad es cuando se dan los nacimientos deseados sin 
+# utilizar metodos anticonceptivos, en cambio la fecundabilidad residual es la 
+# probabilidad de concebir una vez ya se estan usando los anticonceptivos,
+# o sea, nacimientos no intencionales.
 
 
 # Ejercicio: Utilizando el modelo del proceso reproductivo en régimen de 
@@ -205,23 +221,12 @@ gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c){
 # describir los cambios introducidos en los parámetros del modelo para aproximar
 # una y otra distribución de tasas específicas. con n = 3000
 
-
-#n <- 10
-#ns <- 11
-#x0 <- 420
-#r <-  0.04
-#mu <- 22
-#su <- 1.1
-#mu_d <- 2.4 # Media del numero deseado de hijos
-#sd_d <- 1.1 # Desvio del numero deseado de hijos
-#c <- 0.1
-
-#gen_hst_d <- function(n, ns, x0, r, mu, su, mu_d, sd_d, c)
-
 plot_fx_hfd(dat = fx_es, cohorts = 1940, type = "lines")
 
 Sim_40 <- gen_hst_d(n=3000, ns=12, x0=400, r=0.03 , mu= 24, su=4, mu_d=1.7, sd_d=1.1, c=0.1)
 plot_fx(dat = Sim_40 ,points =  T)
+
+
 
 plot_fx_hfd(dat = fx_es, cohorts = 1970, type = "lines")
 
