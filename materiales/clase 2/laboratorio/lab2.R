@@ -213,12 +213,16 @@ plot_hst(hst, c(0.5, n), n)
 
 gen_hst <- function(n, fi, ns, mu, su){
   
-  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 # 
+  wt_u <- rlnorm(n, log(mu^2/ sqrt(mu^2+su^2)), sqrt(log(1 + su^2/mu^2))) * 12 
+  # Esto describe el tiempo hasta la unión en meses
   
-  wt_c <- lapply(1:50, function(x) rnbinom(n, 1, fi)) #
+  wt_c <- lapply(1:50, function(x) rnbinom(n, 1, fi)) 
+  # Esto simula el tiempo de concepción x mujer en tener de 1 a 50 hijos con
+  # una distribución geometrica
   
   wt_b <- list()
-  wt_b[[1]] <- wt_u + wt_c[[1]] + 9 #
+  wt_b[[1]] <- wt_u + wt_c[[1]] + 9 
+  #Aqui simulamos cuanto tiempo pasa hasta el primer nacimiento de cada mujer
   
   hst <- list()
   hst[[1]] <- as.data.frame(cbind(id = 1:n,
@@ -227,13 +231,21 @@ gen_hst <- function(n, fi, ns, mu, su){
   
   for(i in 2:20){
     
-    wt_b[[i]] <- wt_b[[i-1]] + ns + wt_c[[i]] + 9 #
+    wt_b[[i]] <- wt_b[[i-1]] + ns + wt_c[[i]] + 9 
+    # Tiempo en meses del nacimiento x, siendo x > 1
     
-    nid <- which(wt_b[[i]]>50*12) #
+    nid <- which(wt_b[[i]]>50*12) 
+    # Buscamos que mujeres tuvieron hijos despues de los 50 años
     
     wt_b[[i]][nid] <- NA 
     
-    if(sum(is.na(wt_b[[i]])) == n){break} #
+    if(sum(is.na(wt_b[[i]])) == n){break} 
+    
+    #Nos fijamos si el tiempo de espera hasta el nacimiento del niño i es Na, 
+    # o sea, si nació despues de los 50 años, al hacer la suma y compararla con
+    # n estamos viendo si todos los nacimientos que ocurrieton en la iteracion
+    # numero i ya superan los 50 años, con eso ya no tenemos informacion 
+    # relevante para seguir en el bucle y salimos con break.
     
     hst[[i]] <- as.data.frame(cbind(id = rep(1:n,i),
                                     edad = unlist(wt_b)/12,
@@ -270,5 +282,12 @@ plot_fx(ls_hst[[length(ls_hst)]])
 
 
 # Que se observa en el gráfico? Por qué?
+
+# Se observa que, hasta aproximadamente los 18 años, no hay concepción, 
+# ya que se asume que no ocurre concepción hasta el matrimonio, el cual 
+# empieza a darse en esa etapa. A partir de ese punto, la concepción comienza 
+# a aumentar y, alrededor de los 22-23 años, se estabiliza. 
+# Esto se debe a que se ha tomado una probabilidad de concepción constante, 
+# lo cual no refleja la realidad.
 
 

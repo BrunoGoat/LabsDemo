@@ -17,7 +17,7 @@
 
 source("plot_fun.R") # funciones para graficar
 
-asfrs_ht <- read.csv(("asfrs_ht.csv"), header = T) # datos
+asfrs_ht <- read.csv(file.path("datos", "asfrs_ht.csv"), header = T) # datos
 
 plot_asfr(asfrs_ht)
 
@@ -66,7 +66,6 @@ plot_hst(dat = hst, ylim = c(0.5, n), n = n)
 
 # Calculamos la fecundidad acumulada a cada edad E(x) 
 
-
 hst$cum_nac <- cumsum(!is.na(hst$nac)) # completar
 hst$cum_fec <- hst$cum_nac/n
 
@@ -79,23 +78,30 @@ plot_cum_fec(hst)
 
 
 # Cuál es la fecundidad total alcanzada por esta cohorte de mujeres?
-# 
+
+# La fecundidad total que se alcanza por la cohorte de mujeres es de 2
 
 
-# Calculamos las tasas de fecundidad por edad f(x), en intervalos de un año TD
-hst$edad <- floor(hst$edad)
-fx <- # completar
+# Calculamos las tasas de fecundidad por edad f(x), en intervalos de un año 
+
+edades_b <- floor(hst$edad[!is.na(hst$id)])
+fx <- table(factor(edades_b, levels= edad))/n
+plot(as.data.frame(fx))
+sum(fx)
 
 plot(edad, fx)
 
 # describa brevemente lo que se observa en el gráfico.
 
-
-
+# Vemos que entre los 20 y 28 años aproximadamente, la fecundabilidad se 
+# mantiene constante, exceptuando a los 21 donde hubo mas nacimientos, entre los
+# 30 y 40 hay otras subidas de la fecundabilidad, o sea, nacimienots, y a partir
+# de los 40 años se vuelve nula.
 
 # Que información nos aporta la sumatoria de las f(x)?
 
-# Es la tasa de fecundidad total
+# La sumatoria de las f(x) es equivalente a la tasa de fecundidad total que
+# ya mencionamos.
 
 
 
@@ -112,7 +118,9 @@ n <- 1500
 nac <- round(runif(n, 1, 8))# completar
 plot(nac)
 
-n_hst <- # completar
+n_hst <- as.data.frame(cbind(id = rep(1:n, nac),
+                             nac = rep(nac, nac),
+                             paridad = sequence(nac)))# completar
   
 # Definimos una función para generar edades a cada nacimiento
 # Mas adelante estudiaremos la forma correcta para simular edades a cada
@@ -134,9 +142,15 @@ comp_edades <- function(nac){
 n_hst$edad <- unlist(sapply(nac, comp_edades))
 
 # Que supuestos hacemos sobre los primeros nacimientos
+
+# Suponemos que los primeros nacimientos para las mujeres, se dan cuando estas 
+# tienen entre 12 a 20 años máximo.
+
 # y que supuestos hacemos sobre los siguientes nacimientos en "comp_edades"
 
-
+# Estamos asumiendo que para cada nacimiento i este se dará entre un minimo de
+# un año y un máximo de 5 años posterior al anterior nacimiento. Todo esto es válido
+# hasta que la mujer tenga 50 años donde ya no tiene mas hijos.
 
 
 # agregamos el vector con edades enteras
@@ -144,17 +158,26 @@ n_hst <- merge(n_hst, as.data.frame(edad), by = "edad", all= T)
 
 
 # Fecundidad acumulada a edad x
-n_hst$cum_nac <- # completar
-n_hst$cum_fec <- # completar 
+n_hst$cum_nac <- cumsum(!is.na(n_hst$nac))  # completar 
+n_hst$cum_fec <- n_hst$cum_nac/n  # completar 
 
-plot_cum_fec(n_hst, c(0, 5), n)
+plot_cum_fec(n_hst)
 
 # describa brevemente lo que se observa en el gráfico.
 
+# Vemos la fecundidad acumulada, donde en este caso crece a partir de los 12
+# años de manera muy pronunciada hasta aprox los 25-28 donde cambia la concavidad
+# pero sigue creciendo, es a los 40 cuando comienza a estancarse y deja de crecer.
+
 # tasas de fecundidad por edad f(x)
-fx <- # completar
+edades_b2 <- floor(n_hst$edad[!is.na(hst$id)])
+fx <- table(factor(edades_b2, levels=edad))/n # completar
 plot(edad, fx)
 
 # describa brevemente lo que se observa en el gráfico.
 # En que edades es mayor la fecundidad de esta cohorte?
 
+# A partir de los 13 años, la fecundidad comienza a aumentar de manera 
+# sostenida hasta alcanzar su punto máximo alrededor de los 20 años.
+# Luego, se mantiene en un nivel elevado hasta los 30 años, y a partir de ahí,
+# disminuye progresivamente hasta casi desaparecer alrededor de los 40 años.
