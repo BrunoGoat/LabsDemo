@@ -156,7 +156,7 @@ Tx <- c(sum(nLx), (sum(nLx) - cumsum(nLx))[1:length(nLx)-1])
 # rev(cumsum(rev(nLx)))
 
 # Calculamos la esperanza de vida a edad x
-ex <- Tx/lx
+ex <- Tx/lx[-length(lx)]
 
 # Creamos la tabla
 lt <- data.frame(x, nax = round(nax, 4),
