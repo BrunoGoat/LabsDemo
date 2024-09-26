@@ -37,6 +37,7 @@ plot_Mx(dat = Mx_all, anios = 1900:2005,edades = 0:95, sex = "Female")
 # Describir lo que se observa en el gráfico. Contestando: 
 
 # Qué indicador estamos utilizando? Qué hay en numerador/denominador?
+Revisar
 
 
 # Cuáles son las diferencias más imprtantes entre hombres y mujeres?
@@ -65,7 +66,9 @@ nMx <- plot_Mx(dat = Mx_all, anios = 1900,sex='Male',edades = 0:95, return_data 
 
 
 # Describir que hace la siguiente función:
-# 
+# Definimos los supuestos de ax para cada genero, en el intervalo 0, 1, 
+# segun la mortalidad infantil.
+
 get_na0 <- function(nMx, males){
   
   if(males){
@@ -108,45 +111,52 @@ get_na0 <- function(nMx, males){
 }
 
 # Definir las edades
-x <- 
+x <- c(0:95)
 
 # Definimos el número de intervalos
-nmax <- 
+nmax <- length(x)
 
 # Definimos los factores de separación nax 
 # creamos un vector vacio para guardar los nax
 nax <- vector()
 
 # definimos a0 con la ayuda de la función "get_na0"
-na0 <- 
+na0 <- get_na0(nMx, T)
 
-# assignamos los factores a cada intervalo
-nax[1] <- 
-nax[2:nmax] <- 
+# asignamos los factores a cada intervalo
+nax[1] <- na0
+nax[2:nmax] <- 0.5
 
 # convertimos las nMx en nqx
-nqx <- 
+nqx <- nMx/(1+(1-nax)*nMx)
 
 # nos aseguramos que la probabilidad en el último intervalo sea 1
-nqx[nmax] <- 
+nqx[nmax] <- 1
 
 # Construimos las lx - ver cumprod() - Nota: l0 = 1
-lx <- 
+(1-nqx) #Probabilidad de sobrevivir
+
+lx <- c(1,cumprod((1-nqx)))
 
 # Obtenemos las defunciones
-ndx <- 
+ndx <- nqx * lx[1:length(lx)-1]
+# -diff(lx) alternativa
 
 # creamos un vector con los sobrevivientes en x+n
-lxn <- 
+lxn <- lx[2:length(lx)]
+# lxn <- lx[-1] alternativa
 
 # Obtenemos los años persona en el intervalo nLx
-nLx <- 
+nLx <- lxn + (nax*ndx)
 
 # Calculamos los años persona por encima de x
-Tx <- 
+
+Tx <- c(sum(nLx), (sum(nLx) - cumsum(nLx))[1:length(nLx)-1])
+
+# rev(cumsum(rev(nLx)))
 
 # Calculamos la esperanza de vida a edad x
-ex <- 
+ex <- Tx/lx
 
 # Creamos la tabla
 lt <- data.frame(x, nax = round(nax, 4),
