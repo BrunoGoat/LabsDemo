@@ -66,6 +66,7 @@ nMx <- plot_Mx(dat = Mx_all, anios = 1900,sex='Male',edades = 0:95, return_data 
 
 
 # Describir que hace la siguiente función:
+# Calculamos a0 segun el nivel de mortalidad infantil.
 # Definimos los supuestos de ax para cada genero, en el intervalo 0, 1, 
 # segun la mortalidad infantil.
 
@@ -114,7 +115,7 @@ get_na0 <- function(nMx, males){
 x <- c(0:95)
 
 # Definimos el número de intervalos
-nmax <- length(x)
+nmax <- length(nMX)
 
 # Definimos los factores de separación nax 
 # creamos un vector vacio para guardar los nax
@@ -128,7 +129,7 @@ nax[1] <- na0
 nax[2:nmax] <- 0.5
 
 # convertimos las nMx en nqx
-nqx <- nMx/(1+(1-nax)*nMx)
+nqx <- (1*nMx)/(1+(1-nax)*nMx)
 
 # nos aseguramos que la probabilidad en el último intervalo sea 1
 nqx[nmax] <- 1
@@ -140,10 +141,11 @@ lx <- c(1,cumprod((1-nqx)))
 
 # Obtenemos las defunciones
 ndx <- nqx * lx[1:length(lx)-1]
+ndx <- -diff(lx)
 # -diff(lx) alternativa
 
 # creamos un vector con los sobrevivientes en x+n
-lxn <- lx[2:length(lx)]
+lxn <- lx[-1]
 # lxn <- lx[-1] alternativa
 
 # Obtenemos los años persona en el intervalo nLx
@@ -152,11 +154,12 @@ nLx <- lxn + (nax*ndx)
 # Calculamos los años persona por encima de x
 
 Tx <- c(sum(nLx), (sum(nLx) - cumsum(nLx))[1:length(nLx)-1])
+Tx <- rev(cumsum(rev(nLx)))
 
 # rev(cumsum(rev(nLx)))
 
 # Calculamos la esperanza de vida a edad x
-ex <- Tx/lx[-length(lx)]
+ex <- Tx/lx[1:nmax]
 
 # Creamos la tabla
 lt <- data.frame(x, nax = round(nax, 4),
@@ -174,3 +177,108 @@ lt
 # 3 - sex: Define si el análisis está hecho para hombres ("M") o mujeres ("F")
 # 4 - tabla: si TRUE la función devuelve toda la tabla, si FALSE devuelve sólo el valor de la esperanza de 
 # vida al nacer (hacer TRUE por default)
+
+compute_lt <- function(nMx, x, sex, tabla = T) {
+  
+  get_na0 <- function(nMx, sex){
+    
+    if(sex=="M"){
+      
+      if (nMx[1] < 0.023){
+        
+        na0 <- 0.14929 - 1.99545 * nMx[1]
+      }else{
+        
+        if(nMx[1] >= 0.023 & nMx[1] < .08307){
+          
+          na0 <- .02832 + 3.26021 * nMx[1]
+          
+        }else{
+          
+          na0 <- 0.29915
+        }
+      }
+    }
+    
+    if(sex=="F"){
+      
+      if (nMx[1] <  0.01724){
+        
+        na0 <- .14903 - 2.05527 * nMx[1]
+      }else{
+        
+        if(nMx[1] >= 0.01724 & nMx[1] < 0.06891){
+          
+          na0 <- 0.04667 + 3.88089 * nMx[1]
+          
+        }else{
+          
+          na0 <- .31411
+        }
+      }  
+      
+    }
+    
+    return(na0)
+    
+  }
+  
+  # Definimos el número de intervalos
+  nmax <- length(nMX)
+  
+  # Definimos los factores de separación nax 
+  
+  # creamos un vector vacio para guardar los nax
+  nax <- vector()
+  
+  # definimos a0 con la ayuda de la función "get_na0"
+  na0 <- get_na0(nMx, T)
+  
+  # asignamos los factores a cada intervalo
+  nax[1] <- na0
+  nax[2:nmax] <- 0.5
+  
+  # convertimos las nMx en nqx
+  nqx <- (1*nMx)/(1+(1-nax)*nMx)
+  
+  # nos aseguramos que la probabilidad en el último intervalo sea 1
+  nqx[nmax] <- 1
+  
+  # Construimos las lx
+  lx <- c(1,cumprod((1-nqx)))
+  
+  # Obtenemos las defunciones
+  ndx <- -diff(lx)
+  
+  # creamos un vector con los sobrevivientes en x+n
+  lxn <- lx[-1]
+  
+  # Obtenemos los años persona en el intervalo nLx
+  nLx <- lxn + (nax*ndx)
+  
+  # Calculamos los años persona por encima de x
+
+  Tx <- rev(cumsum(rev(nLx)))
+  
+  # Calculamos la esperanza de vida a edad x
+  ex <- Tx/lx[1:nmax]
+  
+  # Creamos la tabla
+  if (tabla) {
+    lt <- data.frame(x, nax = round(nax, 4),
+                     nMx = round(nMx,4),
+                     nqx = round(nqx[1:nmax], 4), lx = round(lx[1:nmax],4),
+                     ndx = round(ndx, 4), nLx = round(nLx, 4), Tx = round(Tx, 2),
+                     ex = round(ex, 2))
+    return(lt)
+  }
+  
+  else { 
+    return(ex[1])
+  }
+  
+  
+}
+
+
+
