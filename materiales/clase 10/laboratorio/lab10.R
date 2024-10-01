@@ -256,12 +256,15 @@ compute_lt <- function(nMx, x, sex, tabla = T) {
   # Obtenemos los años persona en el intervalo nLx
   nLx <- lxn + (nax*ndx)
   
+  nLx[nmax] <- lx[nmax] / nMx[nmax]
+  
   # Calculamos los años persona por encima de x
 
   Tx <- rev(cumsum(rev(nLx)))
   
   # Calculamos la esperanza de vida a edad x
   ex <- Tx/lx[1:nmax]
+  
   
   # Creamos la tabla
   if (tabla) {
