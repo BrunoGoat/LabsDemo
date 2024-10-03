@@ -265,3 +265,5 @@ points(1900:2021, exc_M, col = "red")
 # def_m es la chida para trabajar, son los datros para los hombres lo mismo con def_f, son defunciuoens
 
 # dataos de años persona, saque fotos con el principio del trabjo 
+
+# http://colo1.msp.gub.uy/redbin/RpWebEngine.exe/Portal?BASE=VITAL_DEF1&lang=esp
