@@ -162,8 +162,8 @@ nkx <- nkx_all[nkx_all$Year==1900 & nkx_all$Age %in% 0:95, "Male"]
 
 # Calculamos la tabla - `type` refiere a los factores de separación,
 # la opción "cd" es la más similar al procedimiento que utilizamos nosotros
-x = 0:95
-ltd <- life.table(x = x, nDx = ndx, nKx = nkx, iwidth = 1, width12 = c(1,1), type = "cd") 
+
+ltd <- life.table(x = 0:95, nDx = ndx, nKx = nkx, iwidth = 1, width12 = c(1,1), type = "cd") 
 
 # Comparamos resultados
 plot(compute_lt(nMx, 0:95, sex = "M", tabla = T)$ex)
@@ -190,9 +190,78 @@ exc_M <- lapply(nMxc_M, function(x) compute_lt(x, 0:95, sex = "M", tabla = F))
 exc_F <- lapply(nMxc_F, function(x) compute_lt(x, 0:95, sex = "F", tabla = F))
 
 plot(1900:2021, exc_F)
-plot(1900:2021, exc_M, col = "red")
+points(1900:2021, exc_M, col = "red")
 
 # Describir los resultados 
 
+# La esperenza de vida al nacer aumenta con el pasar de los años y en casi todos los
+# casos la esperanza de vida al nacer de las mujeres es mayor que la de los hombres.
+
+# Aproximadamente en 1950 se acentua mucho mas esta diferencia entre los generos.
+
+# Luego de los 90 parecen crecer en ambos generos de igual medida.
+
+# Al principio, entre 1900 y 1920, los servicios de la salud eran bastante peores y
+# dispares entre clases sociales y además se llevaba un peor registro a la hora de 
+# tomar los datos.
 
 
+
+
+# TAREA TIPS
+# PARTE 1 INC 2.
+# HACER UN GRAFICO PARECIDO A EL DE FIGURE 1 TASAS DE FEC POR EDAD DE COH 1940 - 1970 ESPAÑA CLASE 7
+
+# INCISO 3 ELEGIR FECUNDIDAD NATURAL O REGULADA, CALIBRAR PARAMETROS PARA QUE SE PAREZCA A EL AÑO SELECCIONADO.
+
+# iNC 4, LO MAS IMPORTANTE, NO SER ESCUETO ACA
+
+# INC 5, HACER VARIAR 2 PARAMETROS, UN ANALISIS DE SENSIBILIDAD, LO HICIMOS EN 2 LABS, E 
+# INTERPRETAR EL RESULTADO Y EL CONTEXTO HISTORICO SUMA
+
+# PARTE 2 
+# iNC 1, SACAR LA S DE HTTP SI NO ANDA
+
+# HALLAR UNA TABLA EN PAG.
+defunciones
+cruces con varibales de defunciones
+
+# TITULO CUALQUIERA 
+cruce de linea edad en años al facllecer
+columna año de ocurrencia de la defuncion
+variables de conrtros sexo
+procentakje anbsoluto 
+
+tabla
+
+#EDAD EN AÑOS AL FALLECER
+#AÑO DE OCURRENCIA
+#VARIABLE DE CONTROL SEXO
+#ABSOLUTOS
+
+#DESCARGAR COMO EXCEL
+
+# EN EL INST DE EST.
+#REVISION 2013, TOTAL PAIS,. PON POR SEX Y EDAD1996 2050, APARECE UN EXCEL
+
+# 30 DE JUNIO PORQUE CON ESO YA MEDIMOS LA UNIFORMIDAD DE NCAIMIENTOS Y MUERTES, ENTRADAS Y SALIDAS EN LA POBLACION
+
+# GUARDAMOS ESE EXCEL, INC 3 DEFUNCIONES EN EL NUMERADOR SOBRE AÑOS PERSONA DENOMINADOR
+
+# INC 4 USAR LA FUNCION QUE HICIMOS EN EL LAB 11, 
+
+# iNC 5 ESTO: PERO CON LOS DATOS CHIDOS, GRAFICAMOS ESPERANZA DE VIDA AL NACER AL PASAR DEL TIEMPO
+exc_M <- lapply(nMxc_M, function(x) compute_lt(x, 0:95, sex = "M", tabla = F))
+exc_F <- lapply(nMxc_F, function(x) compute_lt(x, 0:95, sex = "F", tabla = F))
+
+plot(1900:2021, exc_F)
+points(1900:2021, exc_M, col = "red")
+
+# sE RECOMIENDA USAR LaTex .tec, compila a un pdf y se entrega eso :P
+
+# Para darle un plus al trabajo, la bibliografia 
+
+# library(readxl) esto lee excel
+# def_m es la chida para trabajar, son los datros para los hombres lo mismo con def_f, son defunciuoens
+
+# dataos de años persona, saque fotos con el principio del trabjo 
