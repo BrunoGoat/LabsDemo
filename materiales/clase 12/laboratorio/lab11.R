@@ -234,6 +234,7 @@ procentakje anbsoluto
 
 tabla
 
+
 #EDAD EN AÑOS AL FALLECER
 #AÑO DE OCURRENCIA
 #VARIABLE DE CONTROL SEXO
