@@ -1,11 +1,17 @@
 library(ggplot2)
 
-plot_fx <- function(dat, points = F, ...){
+plot_fx <- function(dat, lines = FALSE, return_fx = FALSE, ...){
   fx <- table(factor(floor(dat$edad), levels = 10:50)) / max(dat$id)
-  if(points){
-    points(10:50, fx, ...)
-  }else{
+  if(lines){
+    lines(10:50, fx, ...)
+  } else {
     plot(10:50, fx, ...)
+  }
+  
+  if(return_fx){
+    return(fx)
+  }else{
+    return(sum(fx))
   }
 }
 
