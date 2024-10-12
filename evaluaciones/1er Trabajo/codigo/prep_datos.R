@@ -7,7 +7,7 @@ def_m <- def_raw[1:115, 3:(ncol(def_raw)-1)]# subset hombres
 names(def_m)[1] <- "edad" 
 str(def_m)
 def_m <- apply(def_m, 2, as.numeric)# convertir todas las columnas a "numeric"
-def_m[is.na(def_m)] <- 0# NAs a 0
+def_m[is.na(def_m)] <- 0 # NAs a 0
 def_m <- as.data.frame(def_m) # hacer data.frame
 
 
@@ -249,12 +249,17 @@ compute_lt <- function(nMx, x, sex, tabla = T) {
   
 }
 
+
 # obtener tasas con función plot_Mx
 
 nMxt_m <- plot_Mx(dat = nMx_m, anios = 1997:2020, edades = 0:90, sex = "Male",
                  return_data = T, log_escale = F, as_list = T)
+
 nMxt_f <- plot_Mx(dat = nMx_f, anios = 1997:2020, edades = 0:90, sex = "Female",
                   return_data = T, log_escale = F, as_list = T)
+
+tab_m <- lapply(nMxt_m, function(n) compute_lt(n, x = 0:90, sex = "M", tabla = T))
+tab_f <- lapply(nMxt_f, function(n) compute_lt(n, x = 0:90, sex = "F", tabla = T))
 
 # calcular la esperanza de vida al nacer para cada serie de Mx con compute_lt y lapply
 
