@@ -26,13 +26,22 @@ plot(fert)
 # Describir lo que se observa en el gráfico. Que son estos valores? Que hay en 
 # numerador y denominador para su cálculo?
 
+# Estamos viendo la probabilidad de tener el primer hijo de una cohorte de mujeres
+# que aun no tuvieron, en el denominador estan los años persona del año de mujeres 
+# que aun no experimentaron el evento (nacimiento), en el numerador tenemos 
+# la cantidad de primeros nacimientos
+
+
 # Cargamos los datos de las tasas específicas de mortalidad de una cohorte 
 mort <- read.csv(file.path("datos","mx.csv"))
 plot(mort)
 
-# Describir lo que se observa en el gráfico- Que son estos valores? Que hay en 
+# Describir lo que se observa en el gráfico? Que son estos valores? Que hay en 
 # numerador y denominador para su cálculo?
 
+# En el grafico podemos ver las tasas de mortalidad especificas por edad.
+# En el numerador tenemos las defunciones, y en el denominador los años persona o sea
+# la exposición al riesgo del evento.
 
 # Estas tasas van a representar nuestra función de riesgo constante a intervalos para 
 # las variables aleatorias "Tiempo al Fallecimiento" y "Tiempo al Primer Hijo" 
@@ -48,42 +57,80 @@ lambda <- mort$h
 # Responder:
 # Cuál es el riesgo de morir:
 # 1) Entre edades 0-1
+lambda[1]
+# 0.200466
 
 # 2) Entre edades 50-51
+lambda[51]
+# 0.0043350
 
 # 3) Entre edades 100-101
-
+lambda[101]
+# 0.7123090
 
 # Cual es el riesgo de morir:
 # 1) antes de alcanzar la edad exacta 0
+0
 
 # 2) antes de alcanzar la edad exacta 1
+sum(lambda[seq_len(1)])
+# 0.2004660
 
 # 3) antes de alcanzar la edad exacta 100
+sum(lambda[seq_len(100)])
+# 5.703166
 
 # 4) antes de alcanzar la edad exacta 101
+sum(lambda[seq_len(101)])
+# 6.415475
 
 # Ejercicio:
 # Crear una función pw_H (piece-wise Hazard) con argumentos x, lambda
 # que calcule el riesgo acumulado hasta desde edad 0 hasta la edad maxima
 # en los datos
 
+pw_h <- function (x, lambda) {
+  
+  k = sum(lambda[seq_len(x)])
+  return(k)
+} 
+
 # función de riesgo acumulado
+
 
 
 # Responder utilizando la función: 
 # Cual es el riesgo de morir:
 # 1) antes de alcanzar la edad exacta 0
+pw_h(0, lambda)
 
 # 2) antes de alcanzar la edad exacta 1
+pw_h(1, lambda)
 
 # 3) antes de alcanzar la edad exacta 100
+pw_h(100, lambda)
 
 # 4) antes de alcanzar la edad exacta 101
+pw_h(101, lambda)
 
 # Ejercicio: Graficar la función de riesgo acumulado.
 # (computar la función en un vector H utilizando pw_H)
 
+h = c(0 : 101)
+
+H = as.vector(lapply(h, function(j) pw_h(j, lambda)))
+
+# Profe
+sup <- min(x):(max(x)+1)
+H <- rep(NA, length(sup))
+
+for (i in 1:length(sup)) {
+  H[i] <- pw_h(i-1, lambda)
+}
+H
+#
+
+plot(sup, H, type="l", lwd=3, col=2)
 
 # Ejercicio: Computar y graficar la función de supervivencia
 
