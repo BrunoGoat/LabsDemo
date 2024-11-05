@@ -26,9 +26,9 @@ f <- function(x){x^2 - 4}
 
 curve(f, from = -5, to = 5); abline(h = 0, lty = 3)
 # cuáles son las raices de f()?
+# -2 y 2
 
-
-# Uniroot recive tres argumentos, la función y los límites del intervalo donde 
+# Uniroot recibe tres argumentos, la función y los límites del intervalo donde 
 # va a buscar la función 
 uniroot(f, lower = -5, upper = 0)$root # Nos da la raiz en [-5 , 0]
 uniroot(f, lower = 0, upper = 5)$root # Nos da la raiz en [0 , 5]
@@ -61,20 +61,21 @@ plot(mort)
 # acepte intervalos de diferentes largos
 
 # intervalos
-edades <- 
-inf <- 
-sup <- 
-lambda <- 
+edades <- mort$edad
+inf <- c(min(edades) : max(edades-1))
+sup <- c(min(edades+1): max(edades))
+lambda <- mort$h
+
 
 # función de riesgo por intervalos
 # Describir que hacen cada uno de los pasos
 h.pw <- function(t, inf, sup, lambda){
   
-  lower_int <- (t-inf)>=0 #
-  upper_int <- (t-sup)<0 #
-  indicator <- lower_int * upper_int #
+  lower_int <- (t-inf)>=0 # A un vector t, le restamos los infimos, nos devuelve un vector de 1s o 0s segun el valor de t, si es mayor o igual que 0, en esa posicion nos devuelve un uno
+  upper_int <- (t-sup)<0 # Ahora al vector t, le restamos los supremos y sucede lo mismo pero esta vez si es menor que 0 
+  indicator <- lower_int * upper_int # Con esto, nos quedamos la posicion exacta donde esta t en el vector
   
-  max(lambda * indicator) # 
+  max(lambda * indicator) #y con esto tenemos el lambda en la posicion t del vector
   
 }
 
