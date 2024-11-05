@@ -182,8 +182,10 @@ lines(x, exp(-H),  lwd=3, col=2, lty=2) # completar
 
 # Que se observa en el gráfico?
 
-# 
+# Vemos como el grafico de la funcion de supervivencia de el paquete y el grafico de la funcion de supervivencia que nosotros construimos (linea punteada) son identicas.
 
+# Le pasamos los valores de t y los eventos, a la funcion de la libreria y construye una funcion de supervivencia,
+# Que posteriormente coincide con nuestros datos simulados, por lo que lo hicimos bien
 
 
 # Ejercicio:
@@ -193,7 +195,7 @@ lines(x, exp(-H),  lwd=3, col=2, lty=2) # completar
 #    Agregar un argumento Haz que cuando T devuelva la función de riesgo acumulado H 
 #    además de las t.
 
-
+# Copiar todo, calcular las t y la H
 
 
 
