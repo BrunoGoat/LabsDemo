@@ -62,8 +62,8 @@ plot(mort)
 
 # intervalos
 edades <- mort$edad
-inf <- c(min(edades) : max(edades-1))
-sup <- c(min(edades+1): max(edades))
+inf <- c(min(edades) : max(edades))
+sup <- c(min(edades+1): max(edades+1))
 lambda <- mort$h
 
 
@@ -83,7 +83,7 @@ h.pw <- function(t, inf, sup, lambda){
 h.pw(t=1, inf, sup, lambda)
 
 # Que devuelve la función en este caso?
-
+# Nos devuelve el riesgo en el intervalo 1-2
 
 # función de riesgo acumulado
 # Describir cada uno de los pasos
@@ -92,7 +92,7 @@ H.pw <- function(t, inf, sup, lambda){
   p1 <-  pmax(t-inf, 0) # 
   p2 <-  pmin(p1, sup-inf) #
   
-  return(sum(lambda*p2)) #
+  return(sum(lambda*p2)) # Nos devuelve la suma del riesgo hasta t
   
 }
 
@@ -100,6 +100,7 @@ H.pw <- function(t, inf, sup, lambda){
 H.pw(t=101, inf, sup, lambda)
 
 # Que devuelve la función en este caso?
+# Nos devuelve el riesgo acumulado hasta la edad t, en este caso 101
 
 # plot
 x <- min(inf):max(sup)
@@ -112,11 +113,12 @@ H
 plot(x, H, type="l", lwd=3, col=2)
 
 # Graficar la función de supervivencia
-S <- 
+S <- exp(-H)
 plot(x, S, typ="l",lwd=3, col=2)
 
 # Describir lo que se observa en el gráfico
 
+# Nos muestra la cantidad de personas que estan vivas en cierta edad al pasar el tiempo, alcanzando los diferentes intervalos, notamos que el intervalo 0, 1 tiene una gran caida de la supervivencia por los fallecimientos de bebes que no pueden ser evitados, luego vemos como se estabiliza la supervivencia bajando muy poco a lo largo de muchos años, hasta apoximadamente los 70 años donde se aprecia un cambio de concavidad y la supervivencia cae mucho mas rapido, en este caso, nuestra grafica en los 101 años, la supervivencia no alcanza el 0, por lo que aun quedan personas por encima de los 101 años.
 
 # Ahora que tenemos nuestra función de riesgo acumulado, necesitamos
 # definir la función para la cual vamos a encontrar la raiz 
