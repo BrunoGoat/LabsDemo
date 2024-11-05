@@ -125,7 +125,7 @@ plot(x, S, typ="l",lwd=3, col=2)
 
 f <- function(t, inf, sup, lambda, u){
   
-  res <- H.pw(t, inf, sup, lambda) + # completar
+  res <- H.pw(t, inf, sup, lambda) +  log(u)# completar
   
   return(res)
 }
@@ -135,20 +135,20 @@ f <- function(t, inf, sup, lambda, u){
 
 root <- function(n, inf, sup, lambda){
   
-  u <- runif(n) # 
+  u <- runif(n) # generamos n uniformes 0-1
   times <- rep(NA, n) 
   
   for(i in 1:n){
     result <- uniroot(f, interval=c(0, length(lambda)),
-                      u=u[i], inf=inf, sup=sup, lambda=lambda) #
-    times[i] <- result$root
+                      u=u[i], inf=inf, sup=sup, lambda=lambda) # hallamos la raiz de f
+    times[i] <- result$root 
   }
   return(times)
 }
 
 # Ahora generamos 10.000 tiempos de espera a la muerte y los guardamos
 # en t
-t <- root(10^4, inf, sup, lambda) #
+t <- root(10^4, inf, sup, lambda) # generamos
 
 
 # Para asegurarnos de que los resultados obtenidos en los pasos anteriores 
@@ -175,14 +175,14 @@ survival_fit <- survfit(Surv(t, eventos)~1)
 sim_survival <- with(survival_fit, data.frame(time, surv))
 
 # Graficamos
-plot(, xlab="t", ylab="S(t)", xlim = c(0,101)) # completar
+plot(sim_survival, xlab="t", ylab="S(t)", xlim = c(0,101)) # completar
 
 # Comparamos con la función de supervivencia teórica
-lines(x, , lwd=3, col=2, lty=2) # completar
+lines(x, exp(-H),  lwd=3, col=2, lty=2) # completar
 
 # Que se observa en el gráfico?
 
-
+# 
 
 
 
