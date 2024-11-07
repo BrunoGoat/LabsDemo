@@ -151,6 +151,7 @@ root <- function(n, inf, sup, lambda){
   return(times)
 }
 
+root(20,inf,sup,lambda)
 # Ahora generamos 10.000 tiempos de espera a la muerte y los guardamos
 # en t
 t <- root(10^4, inf, sup, lambda) # simula tiempos de espera al evento "muerte" definido por la funcion de riesgo y los intervalos, son duraciones de vida
@@ -208,6 +209,65 @@ lines(x, exp(-H),  lwd=3, col=2, lty=2) # completar
 
 # Copiar todo, calcular las t y la H
 
+ste <- function(n, edades, lambda, Haz){
+  inf <- seq(0,length(edades)-1,1)
+  sup <- seq(1,length(edades))
+  
+  H.pw <- function(t, inf, sup, lambda){  
+    p1 <-  pmax(t-inf, 0)  
+    p2 <-  pmin(p1, sup-inf) 
+    return(sum(lambda*p2)) #Devuelve el riesgo acumulado hasta t
+  }
+  
+  x <- min(inf):max(sup)
+  
+  H <- rep(NA, length(x))
+  
+  for (i in 1:length(x)){
+    H[i] <- H.pw(x[i], inf, sup, lambda)
+  }
+  
+  f <- function(t, inf, sup, lambda, u){
+    
+    res <- H.pw(t, inf, sup, lambda) +  log(u)
+    
+    return(res)
+  }
+  # Ahora que tenemos nuestra función de riesgo acumulado, necesitamos
+  # definir la función para la cual vamos a encontrar la raiz 
+  
+  root <- function(n, inf, sup, lambda){
+    
+    u <- runif(n) #generamos n valores a traves de uniformes 0-1
+    times <- rep(NA, n) 
+    
+    for(i in 1:n){
+      result <- uniroot(f, interval=c(0, length(lambda)),
+                        u=u[i], inf=inf, sup=sup, lambda=lambda) # para cada u, va a encontrar la t que hace 0 a la funcion y las guardamos todas en el vector times
+      times[i] <- result$root
+      #tiempos hasta el evento que queremos simular
+    }
+    return(times)
+     #RETORNAR ESTO LAS tes
+  }
+  
+  t <- root(n,inf,sup,lambda)
+  
+  if (Haz) 
+      {
+        return(list(H,t))
+      }
+      else
+      {
+        return(t)
+      }
+        
+  }
+  
+
+  
+  
+  
 
 
 ####################
@@ -217,7 +277,7 @@ lines(x, exp(-H),  lwd=3, col=2, lty=2) # completar
 n <- 10000
 mort <- read.csv(file.path("datos","mx.csv"))
 te <- ste(n, edades = mort$edad, lambda = mort$h, Haz = T)
-eventos <-  
+eventos <-  te[[1]] < inf
 H <-  
 # Grafica la curva de supervivencia simulada  
 plot(survfit(Surv(te[[1]], eventos)~1), xlab="t", ylab="S(t)")
@@ -233,4 +293,4 @@ plot(survfit(Surv(te[[1]], eventos)~1), xlab="t", ylab="S(t)")
 # Grafica la curva de supervivencia observada
 lines(fert$edad-15, , lwd=3, col=2, lty=2)
 
-
+# SAQUE UNA FOTO, HAY QUE VER POR QUE t tiene 102 de tamaño
