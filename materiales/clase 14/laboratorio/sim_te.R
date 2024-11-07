@@ -62,28 +62,33 @@ plot(mort)
 
 # intervalos
 edades <- mort$edad
+#seq(0,length(edades)-1,1)
+#seq(1,length(edades))
 inf <- c(min(edades) : max(edades))
 sup <- c(min(edades+1): max(edades+1))
 lambda <- mort$h
 
-
 # función de riesgo por intervalos
 # Describir que hacen cada uno de los pasos
 h.pw <- function(t, inf, sup, lambda){
+  #CUAL ES EL RIESGO EN EL INTERVALO QUE NOS INTERESA
+  lower_int <- (t-inf)>=0 #GENERA UN VECTOR CON TRUE EN LOS LIMITES INFERIORES
+  # A un vector t, le restamos los infimos, nos devuelve un vector de 1s o 0s segun el valor de t, si es mayor o igual que 0, en esa posicion nos devuelve un uno
+  upper_int <- (t-sup)<0 #GENERA UN VECTOR CON FALSE EN LOS LIMITES SUPERIORES
+  # Ahora al vector t, le restamos los supremos y sucede lo mismo pero esta vez si es menor que 0 
+  indicator <- lower_int * upper_int #IDENTIFICA EL INTERVALO RELEVANTE
+  # Con esto, nos quedamos la posicion exacta donde esta t en el vector
   
-  lower_int <- (t-inf)>=0 # A un vector t, le restamos los infimos, nos devuelve un vector de 1s o 0s segun el valor de t, si es mayor o igual que 0, en esa posicion nos devuelve un uno
-  upper_int <- (t-sup)<0 # Ahora al vector t, le restamos los supremos y sucede lo mismo pero esta vez si es menor que 0 
-  indicator <- lower_int * upper_int # Con esto, nos quedamos la posicion exacta donde esta t en el vector
-  
-  max(lambda * indicator) #y con esto tenemos el lambda en la posicion t del vector
+  max(lambda * indicator) #MULTIPLICAMOS POR 1 EL LAMBDA RELEVANTE
+  #y con esto tenemos el lambda en la posicion t del vector
   
 }
 
 # Ejemplo
-h.pw(t=1, inf, sup, lambda)
+h.pw(t=1, inf, sup, lambda) 
 
 # Que devuelve la función en este caso?
-# Nos devuelve el riesgo en el intervalo 1-2
+# Nos devuelve el riesgo en el intervalo 1-2, edad 1
 
 # función de riesgo acumulado
 # Describir cada uno de los pasos
@@ -92,7 +97,7 @@ H.pw <- function(t, inf, sup, lambda){
   p1 <-  pmax(t-inf, 0) # 
   p2 <-  pmin(p1, sup-inf) #
   
-  return(sum(lambda*p2)) # Nos devuelve la suma del riesgo hasta t
+  return(sum(lambda*p2)) # Nos devuelve la suma del riesgo hasta t, devuelve el riesgo acumulado hasta t
   
 }
 
@@ -135,20 +140,20 @@ f <- function(t, inf, sup, lambda, u){
 
 root <- function(n, inf, sup, lambda){
   
-  u <- runif(n) # generamos n uniformes 0-1
+  u <- runif(n) # generamos n valores a traves de uniformes 0-1
   times <- rep(NA, n) 
   
   for(i in 1:n){
     result <- uniroot(f, interval=c(0, length(lambda)),
-                      u=u[i], inf=inf, sup=sup, lambda=lambda) # hallamos la raiz de f
-    times[i] <- result$root 
+                      u=u[i], inf=inf, sup=sup, lambda=lambda) # para cada u, va a encontrar la t que hace 0 a la funcion y las guardamos todas en el vector times
+    times[i] <- result$root #tiempos hasta el evento que queremos simular
   }
   return(times)
 }
 
 # Ahora generamos 10.000 tiempos de espera a la muerte y los guardamos
 # en t
-t <- root(10^4, inf, sup, lambda) # generamos
+t <- root(10^4, inf, sup, lambda) # simula tiempos de espera al evento "muerte" definido por la funcion de riesgo y los intervalos, son duraciones de vida
 
 
 # Para asegurarnos de que los resultados obtenidos en los pasos anteriores 
