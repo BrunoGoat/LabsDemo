@@ -265,7 +265,47 @@ ste <- function(n, edades, lambda, Haz){
   }
   
 
+ste <- function(n, edades, lambda, Haz = F){
   
+  inf <- seq(0, length(edades)-1,1)
+  sup <- seq(1, length(edades))
+  
+  H.pw <- function(t, inf, sup, lambda){  
+    p1 <-  pmax((t-inf), 0)
+    p2 <-  pmin(p1, sup-inf)
+    return(sum(lambda*p2)) 
+  }
+  
+  H <- rep(NA, length(edades))
+  x <- min(inf):max(sup)
+  
+  for (i in 1:length(H)){
+    H[i] <- H.pw(x[i], inf, sup, lambda)
+  }
+  
+  f <- function(t, inf, sup, lambda, u){
+    res <- H.pw(t, inf, sup, lambda) + log(u)
+    return(res)
+  }
+  
+  root <- function(n, inf, sup, lambda){
+    u <- runif(n) 
+    times <- rep(NA, n) 
+    
+    for(i in 1:n){
+      result <- uniroot(f, interval=c(0, length(lambda)),
+                        u=u[i], inf=inf, sup=sup, lambda=lambda) 
+      times[i] <- result$root
+    }
+    return(times)
+  }
+  
+  t <- root(n, inf, sup, lambda)
+  
+  
+  if(Haz){ return(list(t, H))}else{ return(t) }
+  
+}
   
   
 
@@ -278,7 +318,7 @@ n <- 10000
 mort <- read.csv(file.path("datos","mx.csv"))
 te <- ste(n, edades = mort$edad, lambda = mort$h, Haz = T)
 eventos <-  te[[1]] < inf
-H <-  
+H <- te[[2]]  
 # Grafica la curva de supervivencia simulada  
 plot(survfit(Surv(te[[1]], eventos)~1), xlab="t", ylab="S(t)")
 # Grafica la curva de supervivencia observada
@@ -286,8 +326,8 @@ lines(mort$edad, , lwd=3, col=2, lty=2)
 
 fert <- read.csv(file.path("datos","fx.csv"))
 te <- ste(n, edades = fert$edad, lambda = fert$h, Haz = T)
-eventos <-  
-H <- 
+eventos <- te[[1]] < inf 
+H <- te[[2]]
 # Grafica la curva de supervivencia simulada
 plot(survfit(Surv(te[[1]], eventos)~1), xlab="t", ylab="S(t)")
 # Grafica la curva de supervivencia observada

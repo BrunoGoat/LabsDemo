@@ -5,7 +5,7 @@
 # 11 de Noviembre de 2024                                                      #   
 ################################################################################
  
-# En el laboratorio anterior trabajamos en una función "ste"para simular los
+# En el laboratorio anterior trabajamos en una función "ste" para simular los
 # tiempos de espera a un evento a partir de una función de riesgo, bajo el supuesto de
 # riesgo constante a intervalos. Los argumentos de la función son: n, edades, lambda (riesgo) y
 # Haz que cuando T devuelve la función de riesgo acumulado H además de los tiempos simulados.
@@ -34,7 +34,7 @@ ste <- function(n, edades, lambda, Haz = F){
   }
   
   root <- function(n, inf, sup, lambda){
-    u <- runif(n) 
+    u <- runif(n, min = 0.2, max = 1) 
     times <- rep(NA, n) 
     
     for(i in 1:n){
@@ -102,8 +102,40 @@ te <- ste(n, edades = fert$edad, lambda = fert$h, Haz = T)
 # tiempos de espera?
 
 
+
+
 # Graficar la función de supervivencia teórica del evento primer hijo
 
+edades <- fert$edad
+inf <- seq(0,length(edades)-1,1)
+sup <- seq(1,length(edades))
+lambda <- fert$h
+
+H.pw <- function(t, inf, sup, lambda){  
+  
+  p1 <-  pmax(t-inf, 0) # 
+  p2 <-  pmin(p1, sup-inf) #
+  
+  return(sum(lambda*p2)) # Nos devuelve la suma del riesgo hasta t, devuelve el riesgo acumulado hasta t
+  
+}
+
+# Que devuelve la función en este caso?
+# Nos devuelve el riesgo acumulado hasta la edad t, en este caso 101
+
+# plot
+x <- min(inf):max(sup)
+H <- rep(NA, length(x))
+
+for (i in 1:length(x)){
+  H[i] <- H.pw(x[i], inf, sup, lambda)
+}
+H
+plot(x, H, type="l", lwd=3, col=2)
+
+# Graficar la función de supervivencia
+S <- exp(-H)
+plot(x, S, typ="l",lwd=3, col=2, ylim=c(0,1))
 
 # Que diferencia hay entre esta función y la que obteniamos en el caso del evento muerte?
 
