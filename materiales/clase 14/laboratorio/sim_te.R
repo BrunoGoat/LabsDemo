@@ -172,20 +172,26 @@ library(survival)
 # hay evento = 1, o cuando no se observa el evento = 0
 # En nuestro caso estamos asumiendo -de momento- que todas las observaciones experimentaron el evento
 # es decir, no hay casos truncados.
-eventos <- t < Inf
+
+eventos <- t < Inf #PARA CADA UNO DE ESTOS TIEMPOS DE ESPERA, HAY EVENTO O HAY CENSURA, TODAS LAS T QUE SIMULAMOS EXPERIMENTARON EVENTOS, YA QUE EL PERIODO DE OBSERVACION ES BASTANTE AMPLIO
 
 # Calculamos S
-survival_fit <- survfit(Surv(t, eventos)~1)
+survival_fit <- survfit(Surv(t, eventos)~1)  #EL ESTIMADOR CM NO PARAMETRICO PARA LA FUNCION DE SUPERVIVENCIA
 # Extraemos los objetos necesarios para simular
-sim_survival <- with(survival_fit, data.frame(time, surv))
+sim_survival <- with(survival_fit, data.frame(time, surv)) #ARMAMOS UN DATA FRAME
 
 # Graficamos
 plot(sim_survival, xlab="t", ylab="S(t)", xlim = c(0,101)) # completar
+#FUNCION DE SUPERVIVENCIA CON LOS DATOS SIMULADOS QUE NOSOTROS LE PASAMOS
+
 
 # Comparamos con la función de supervivencia teórica
 lines(x, exp(-H),  lwd=3, col=2, lty=2) # completar
 
 # Que se observa en el gráfico?
+# 
+# NEGRA ESTIMADOR A PARTIR DE LOS DATOS SIMULADOS
+#ROJA FUNCION DE SUPERVIVENCIA DE LA DIST ORIGNIAL, PARTIENDO DE UNA FUNCION DE RIESGO SEGUN LAS TASASD DE MORTALIDAD ASOCIADA CON UNA FUNCION DE RIESGO, SUPERVIVENCIA QUE CARACTERIZA EL TIEMPO HASTA LA MUERTE
 
 # Vemos como el grafico de la funcion de supervivencia de el paquete y el grafico de la funcion de supervivencia que nosotros construimos (linea punteada) son identicas.
 
