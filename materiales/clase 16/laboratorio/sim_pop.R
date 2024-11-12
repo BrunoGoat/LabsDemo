@@ -29,28 +29,30 @@ mx <- read.csv(file.path("datos","mx.csv"))
 # Ejercicio: describir el contenido de cada linea con #
 
 N <- 10
-pop <- data.frame(id = 1:N) # 
+pop <- data.frame(id = 1:N) # Generamos un numero de id diferente para identificar a cada persona, como la cedula de identidad
 
-srb <- 0.515 # 
+srb <- 0.515 # Probabilidad de que la persona sea hombre
 
 # Asignar un sexo a cado uno de los integrantes de "pop" (1 = mujer, 2 = hombre)
 # usando sample con argumento prob = c(1-srb, srb)
 
-pop$sexo <-
+pop$sexo <- sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
 
-pop$edad <- 0 #
+pop$edad <- 0 # Todas las personas inician con edad 0
 
-pop$edad_mte <- Inf #
+pop$edad_mte <- Inf # Inicializamos las edades de muertes
 
 
 # crear una variable en pop "t_mte" con la edad a la muerte
-pop$t_mte <- 
-
+pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
 
 # Ejercicio:
 # Describir el contenido de las primeras tres filas de la tabla "pop"
 
-
+# Cada fila representa a una persona
+# La persona 1 es una mujer de edad 0, donde aun no conocemos la edad de muerte
+# La persona 2 es una mujer de edad 0, donde aun no conocemos la edad de muerte
+# La persona 3 es un hombre de edad 0, donde aun no conocemos la edad de muerte
   
 ############################
 # SIMULACIÓN               #
@@ -69,27 +71,27 @@ tiempo <- ini
 # Completar rl objeto "rid" (real id) para que tenga la poscición en la tabla 
 # que corresponde a la persona que va a experimentar el evento y "t" para que
 # tenga el tiempo al evento
-rid <- 
-t <- 
+rid <- which.min(pop$t_mte)
+t <- pop[rid, ]$t_mte
   
 # Ahora que sabemos que evento vamos a simular tenemos que
 # actualizar el reloj
 
-tiempo <- 
+tiempo <- tiempo + t 
 
 # Actualizamos las edades
 
-pop$edad <- 
+pop$edad <- pop$edad + t
 
 # Actualizamos lo tiempos de espera
 
-pop$t_mte <- 
+pop$t_mte <- pop$t_mte - t
 
 # Ahora podemos simular el evento, es decir actualizar la información en pop
 # una vez sucedido el evento
 
 pop[rid,]$t_mte <- Inf
-pop[rid,]$edad_mte <- 
+pop[rid,]$edad_mte <- pop[rid,]$edad
 pop[rid,]$edad <- NA
 
 # Ejercicio:
@@ -99,14 +101,14 @@ pop[rid,]$edad <- NA
 # repetir las operaciones anteriores, comenzando por encontrar el tiempo de 
 # espera más corto
 
-rid <- 
-t <-
-tiempo <-
-pop$edad <- 
-pop$t_mte <- 
-pop[rid,]$t_mte <-
-pop[rid,]$edad_mte <- 
-pop[rid,]$edad <- 
+rid <- which.min(pop$t_mte)
+t <- pop[rid, ]$t_mte
+tiempo <- tiempo + t 
+pop$edad <- pop$edad + t
+pop$t_mte <- pop$t_mte - t
+pop[rid,]$t_mte <- Inf
+pop[rid,]$edad_mte <- pop[rid,]$edad
+pop[rid,]$edad <- NA
 
 # Es claro que esta operación necesita un loop
 # Ejercicio:
@@ -117,11 +119,10 @@ pop[rid,]$edad <-
 N <- 10
 pop <- data.frame(id = 1:N)  
 srb <- 0.515 
-pop$sexo <- 
+pop$sexo <-  sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
 pop$edad <- 0 
-pop$edad_mte <- Inf #
-pop$t_mte <- 
-# 
+pop$edad_mte <- Inf 
+pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
 ini <- 1900  
 fin <- 2000  
 
@@ -129,7 +130,6 @@ tiempo <- ini
 
 while (tiempo < fin){
   
-
 } 
 
 # Ejercicio:
