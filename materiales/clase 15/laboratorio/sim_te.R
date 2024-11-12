@@ -34,7 +34,7 @@ ste <- function(n, edades, lambda, Haz = F){
   }
   
   root <- function(n, inf, sup, lambda){
-    u <- runif(n, min = 0.2, max = 1) 
+    u <- runif(n, min = 0, max = 1) 
     times <- rep(NA, n) 
     
     for(i in 1:n){
@@ -142,8 +142,113 @@ plot(x, S, typ="l",lwd=3, col=2, ylim=c(0,1))
 
 # Ejercicio: Ajustar la función de acuerdo a los resultados obtenidos arriba y validar
 
+
+ste2 <- function(n, edades, lambda, Haz = F){
+  
+  inf <- seq(0, length(edades)-1,1)
+  sup <- seq(1, length(edades))
+  
+  H.pw <- function(t, inf, sup, lambda){  
+    p1 <-  pmax((t-inf), 0)
+    p2 <-  pmin(p1, sup-inf)
+    return(sum(lambda*p2)) 
+  }
+  
+  H <- rep(NA, length(edades))
+  x <- min(inf):max(sup)
+  
+  for (i in 1:length(H)){
+    H[i] <- H.pw(x[i], inf, sup, lambda)
+  }
+  
+  f <- function(t, inf, sup, lambda, u){
+    res <- H.pw(t, inf, sup, lambda) + log(u)
+    return(res)
+  }
+  
+  root <- function(n, inf, sup, lambda){
+    u <- runif(n, min = exp(-H)[length(exp(-H))], max = 1) 
+    times <- rep(NA, n) 
+    
+    for(i in 1:n){
+      result <- uniroot(f, interval=c(0, length(lambda)),
+                        u=u[i], inf=inf, sup=sup, lambda=lambda) 
+      times[i] <- result$root
+    }
+    return(times)
+  }
+  
+  t <- root(n, inf, sup, lambda)
+  
+  
+  if(Haz){ return(list(t, H))}else{ return(t) }
+  
+}
 # Funcion modificada
 
+ste2 <- function(n, edades, lambda, Haz = F){
+  
+  inf <- seq(0, length(edades)-1,1)
+  sup <- seq(1, length(edades))
+  
+  H.pw <- function(t, inf, sup, lambda){  
+    p1 <-  pmax((t-inf), 0)
+    p2 <-  pmin(p1, sup-inf)
+    return(sum(lambda*p2)) 
+  }
+  
+  H <- rep(NA, length(edades))
+  x <- min(inf):max(sup)
+  
+  for (i in 1:length(H)){
+    H[i] <- H.pw(x[i], inf, sup, lambda)
+  }
+  
+  f <- function(t, inferior, superior, nivel, u){
+    return(H.pw(t, inf=inferior, sup=superior, lambda=nivel) + log(u))
+  }
+  
+  ne <- exp(-H)[length(exp(-H))]
+  nn <- n - sum(runif(n) < ne)
+  
+  if(nn == 0){
+    
+    t <- rep(Inf, n)
+    
+    return(t); break()
+    
+  }
+  
+  root <- function(nn, inf, sup, lambda){
+    u <- runif(nn, min=exp(-H)[length(exp(-H))])
+    times <- rep(NA, nn)
+    for(i in 1:nn){
+      result <- uniroot(f, interval=c(0, length(lambda)),
+                        u=u[i], inferior=inf, superior=sup, nivel=lambda)
+      times[i] <- result$root
+    }
+    return(times)
+  }
+  
+  t_e <- root(nn, inf, sup, lambda)
+  
+  if(n-length(t_e)!=0){
+    
+    t <- sample(c(t_e, rep(Inf, n-length(t_e))))
+    
+  }else{
+    
+    t <- t_e
+    
+  }
+  
+  if(min(edades)!=0){ 
+    t <- t + min(edades)  
+  }
+  
+  if(Haz){ return(list(t, H)) }else{ return(t) }
+  
+}
 
 
 ####################
@@ -151,14 +256,14 @@ plot(x, S, typ="l",lwd=3, col=2, ylim=c(0,1))
 ####################
 n <- 10000
 mort <- read.csv(file.path("datos","mx.csv"))
-te <- ste(n, edades = mort$edad, lambda = mort$h, Haz = T)
+te <- ste2(n, edades = mort$edad, lambda = mort$h, Haz = T)
 eventos <- te[[1]] < Inf 
 H <- te[[2]] 
 plot(survfit(Surv(te[[1]], eventos)~1), xlab="t", ylab="S(t)")
 lines(mort$edad, exp(-H), lwd=3, col=2, lty=2)
 
 fert <- read.csv(file.path("datos","fx.csv"))
-te <- ste(n, edades = fert$edad, lambda = fert$h, Haz = T)
+te <- ste2(n, edades = fert$edad, lambda = fert$h, Haz = T)
 eventos <- te[[1]] < Inf 
 H <- te[[2]]
 plot(survfit(Surv(te[[1]], eventos)~1), xlab="t", ylab="S(t)")
@@ -166,4 +271,6 @@ lines(fert$edad, exp(-H), lwd=3, col=2, lty=2)
 
 # Ejercicio: Modificar la función para que retorne la duración desde el nacimiento en ambos casos
 
+ste(1, mort$edad, mort$h)
 
+ste2(1, mort$edad, mort$h)
