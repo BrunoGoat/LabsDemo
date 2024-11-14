@@ -129,7 +129,16 @@ fin <- 2000
 tiempo <- ini
 
 while (tiempo < fin){
-  
+  rid <- which.min(pop$t_mte)
+  t <- pop[rid, ]$t_mte
+  if (t == Inf) {break}
+  tiempo <- tiempo + t 
+  pop$edad <- pop$edad + t
+  pop$t_mte <- pop$t_mte - t
+  pop[rid,]$t_mte <- Inf
+  pop[rid,]$edad_mte <- pop[rid,]$edad
+  pop[rid,]$edad <- NA
+  print(tiempo)
 } 
 
 # Ejercicio:
@@ -139,5 +148,30 @@ while (tiempo < fin){
 
 sim_m <- function(N, ini, fin, mx, srb){
   
+  pop <- data.frame(id = 1:N)
+  pop$sexo <-  sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
+  pop$edad <- 0 
+  pop$edad_mte <- Inf 
+  pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
   
+  tiempo <- ini
+  
+  cat("inicio ok, comenzando loop\n")
+  
+  while (tiempo < fin){
+    rid <- which.min(pop$t_mte)
+    t <- pop[rid, ]$t_mte
+    if (t == Inf) {break}
+    tiempo <- tiempo + t 
+    pop$edad <- pop$edad + t
+    pop$t_mte <- pop$t_mte - t
+    pop[rid,]$t_mte <- Inf
+    pop[rid,]$edad_mte <- pop[rid,]$edad
+    pop[rid,]$edad <- NA
+    print(tiempo)
+  } 
+  
+  return(pop)
 }
+
+sim_m(10, 1900, 2000, mx, srb)
