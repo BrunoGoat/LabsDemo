@@ -237,12 +237,14 @@ sim_pop <- function(N, ini, fin, mx, fx, srb){
       pop$t_primhijo[i] <- Inf
     }
   } 
+  
+  mat <- matrix(data = c(pop$t_primhijo, pop$t_mte), ncol = 2)
 
+  
   while (tiempo < fin){
     
-    #ENCONTRAR EL PRIMER EVENTO QUE SUCEdA EN LA TABLA
+    rid <- which.min(mat) %% length(pop$id)
     
-    rid <- which.min(pop$t_mte)
     t <- pop[rid, ]$t_mte
     if (t == Inf) {break}
     tiempo <- tiempo + t 
