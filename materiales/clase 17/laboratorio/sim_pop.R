@@ -238,6 +238,7 @@ sim_pop <- function(N, ini, fin, mx, fx, srb){
     }
   } 
   
+  
   mat <- matrix(data = c(pop$t_primhijo, pop$t_mte), ncol = 2)
 
   
