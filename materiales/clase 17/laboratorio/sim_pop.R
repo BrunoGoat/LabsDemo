@@ -2,7 +2,7 @@
 # Demografía 2024 IESTA                                                        #
 # Daniel Ciganda                                                               # 
 # Laboratorio: Simulación de eventos discrteos en una población cerrada        # 
-# 14 de Noviembre de 2024                                                      #   
+# 12 de Noviembre de 2024                                                      #   
 ################################################################################
 
 # El objetivo de este laboratorio es construir una simulación de eventos discretos 
@@ -29,29 +29,30 @@ mx <- read.csv(file.path("datos","mx.csv"))
 # Ejercicio: describir el contenido de cada linea con #
 
 N <- 10
-pop <- data.frame(id = 1:N) # 
+pop <- data.frame(id = 1:N) # Generamos un numero de id diferente para identificar a cada persona, como la cedula de identidad
 
-srb <- 0.515 # 
+srb <- 0.515 # Probabilidad de que la persona sea hombre
 
 # Asignar un sexo a cado uno de los integrantes de "pop" (1 = mujer, 2 = hombre)
 # usando sample con argumento prob = c(1-srb, srb)
 
-pop$sexo <-
+pop$sexo <- sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
 
-pop$edad <- 0 #
+pop$edad <- 0 # Todas las personas inician con edad 0
 
-pop$edad_mte <- Inf #
-
+pop$edad_mte <- Inf # Inicializamos las edades de muertes
 
 # crear una variable en pop "t_mte" con la edad a la muerte
-pop$t_mte <- 
-
+pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
 
 # Ejercicio:
 # Describir el contenido de las primeras tres filas de la tabla "pop"
 
+# Cada fila representa a una persona
+# La persona 1 es una mujer de edad 0, donde aun no conocemos la edad de muerte
+# La persona 2 es una mujer de edad 0, donde aun no conocemos la edad de muerte
+# La persona 3 es un hombre de edad 0, donde aun no conocemos la edad de muerte
 
-  
 ############################
 # SIMULACIÓN               #
 ############################
@@ -69,27 +70,27 @@ tiempo <- ini
 # Completar rl objeto "rid" (real id) para que tenga la poscición en la tabla 
 # que corresponde a la persona que va a experimentar el evento y "t" para que
 # tenga el tiempo al evento
-rid <- 
-t <- 
-  
+rid <- which.min(pop$t_mte)
+t <- pop[rid, ]$t_mte
+
 # Ahora que sabemos que evento vamos a simular tenemos que
 # actualizar el reloj
 
-tiempo <- 
+tiempo <- tiempo + t 
 
 # Actualizamos las edades
 
-pop$edad <- 
+pop$edad <- pop$edad + t
 
 # Actualizamos lo tiempos de espera
 
-pop$t_mte <- 
+pop$t_mte <- pop$t_mte - t
 
 # Ahora podemos simular el evento, es decir actualizar la información en pop
 # una vez sucedido el evento
 
 pop[rid,]$t_mte <- Inf
-pop[rid,]$edad_mte <- 
+pop[rid,]$edad_mte <- pop[rid,]$edad
 pop[rid,]$edad <- NA
 
 # Ejercicio:
@@ -99,14 +100,14 @@ pop[rid,]$edad <- NA
 # repetir las operaciones anteriores, comenzando por encontrar el tiempo de 
 # espera más corto
 
-rid <- 
-t <-
-tiempo <-
-pop$edad <- 
-pop$t_mte <- 
-pop[rid,]$t_mte <-
-pop[rid,]$edad_mte <- 
-pop[rid,]$edad <- 
+rid <- which.min(pop$t_mte)
+t <- pop[rid, ]$t_mte
+tiempo <- tiempo + t 
+pop$edad <- pop$edad + t
+pop$t_mte <- pop$t_mte - t
+pop[rid,]$t_mte <- Inf
+pop[rid,]$edad_mte <- pop[rid,]$edad
+pop[rid,]$edad <- NA
 
 # Es claro que esta operación necesita un loop
 # Ejercicio:
@@ -117,20 +118,29 @@ pop[rid,]$edad <-
 N <- 10
 pop <- data.frame(id = 1:N)  
 srb <- 0.515 
-pop$sexo <- 
+pop$sexo <-  sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
 pop$edad <- 0 
-pop$edad_mte <- Inf #
-pop$t_mte <- 
-# 
+pop$edad_mte <- Inf 
+pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
 ini <- 1900  
 fin <- 2000  
 
 tiempo <- ini
 
 while (tiempo < fin){
-  
-
+  rid <- which.min(pop$t_mte)
+  t <- pop[rid, ]$t_mte
+  if (t == Inf) {break}
+  tiempo <- tiempo + t 
+  pop$edad <- pop$edad + t
+  pop$t_mte <- pop$t_mte - t
+  pop[rid,]$t_mte <- Inf
+  pop[rid,]$edad_mte <- pop[rid,]$edad
+  pop[rid,]$edad <- NA
+  print(tiempo)
 } 
+
+
 
 # Ejercicio:
 # Escribir una función sim_m que tome como argumentos: 
@@ -139,8 +149,59 @@ while (tiempo < fin){
 
 sim_m <- function(N, ini, fin, mx, srb){
   
+  pop <- data.frame(id = 1:N)
+  pop$sexo <-  sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
+  pop$edad <- 0 
+  pop$edad_mte <- Inf 
+  pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
   
+  tiempo <- ini
+  
+  cat("inicio ok, comenzando loop\n")
+  
+  while (tiempo < fin){
+    rid <- which.min(pop$t_mte)
+    t <- pop[rid, ]$t_mte
+    if (t == Inf) {break}
+    tiempo <- tiempo + t 
+    pop$edad <- pop$edad + t
+    pop$t_mte <- pop$t_mte - t
+    pop[rid,]$t_mte <- Inf
+    pop[rid,]$edad_mte <- pop[rid,]$edad
+    pop[rid,]$edad <- NA
+    print(tiempo)
+  } 
+  
+  return(pop)
 }
+
+sim_m(10, 1900, 2000, mx, srb)
+
+
+
+
+
+
+
+
+
+
+
+
+fert <- read.csv(file.path("datos","fx.csv"))
+te <- ste2(n, edades = fert$edad, lambda = fert$h, Haz = T)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Ejercicio:
@@ -153,10 +214,51 @@ ini <- 1900  # año de inicio
 fin <- 2000  # año de finalización
 
 
-sim_pop <- 
+sim_pop <- function(N, ini, fin, mx, fx, srb){
+  
+  pop <- data.frame(id = 1:N)
+  pop$sexo <-  sample(x = 1:2,size = N, replace = TRUE, prob = c(1-srb, srb))
+  pop$edad <- 0 
+  pop$edad_mte <- Inf 
+  pop$t_primhijo <- Inf
+  
+  pop$t_mte <- ste(n = N, edades = mx$edad, lambda = mx$h, Haz = F)
+  
+  
+  idMuj <- which(pop$sexo == 1)
+  pop$t_primhijo[idMuj] <- ste(n = length(idMuj), edades = fx$edad, lambda = fx$h, Haz = F)
+    
+  tiempo <- ini
+  
+  cat("inicio ok, comenzando loop\n")
+  
+  for (i in idMuj) {
+    if (pop$t_mte[i] < pop$t_primhijo[i]) {
+      pop$t_primhijo[i] <- Inf
+    }
+  } 
 
+  while (tiempo < fin){
+    
+    #ENCONTRAR EL PRIMER EVENTO QUE SUCEdA EN LA TABLA
+    
+    rid <- which.min(pop$t_mte)
+    t <- pop[rid, ]$t_mte
+    if (t == Inf) {break}
+    tiempo <- tiempo + t 
+    pop$edad <- pop$edad + t
+    pop$t_mte <- pop$t_mte - t
+    pop[rid,]$t_mte <- Inf
+    pop[rid,]$edad_mte <- pop[rid,]$edad
+    pop[rid,]$edad <- NA
+    print(tiempo)
+  } 
+  
+  return(pop)
+}
 
-################################################################################
+  
+  ################################################################################
 # Ejercicio:
 
 # 1) Graficar las curva de supervivencia de la transición al primer hijo y la muerte
@@ -165,8 +267,8 @@ sim_pop <-
 # generando datos
 N = 10000
 pop <- 
-
-library(survival)
+  
+  library(survival)
 # muerte
 t <- pop[, "edad_mte"]
 eventos <- t < Inf 
@@ -175,7 +277,7 @@ t <- ste(N, edades = mx$edad, lambda = mx$h, Haz = T)
 H <- t[[2]]
 lines(0:100, exp(-H), lwd=3, col=2, lty=2)
 
-  
+
 # 1er hijo 
 t <- pop[pop$sexo == 1, "edad_nac"]
 eventos <- t < Inf 
@@ -187,5 +289,6 @@ lines(0:50, c(rep(1,15),exp(-H)), lwd=3, col=2, lty=2)
 
 # Ejercicio:
 # Cual es el problema en este caso? Proponer una solución:
+
 
 
