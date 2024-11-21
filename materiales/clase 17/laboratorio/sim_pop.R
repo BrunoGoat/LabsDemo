@@ -202,7 +202,11 @@ te <- ste2(n, edades = fert$edad, lambda = fert$h, Haz = T)
 
 
 
-
+for (i in idMuj) {
+  if (pop$t_mte[i] < pop$t_primhijo[i]) {
+    pop$t_primhijo[i] <- Inf
+  }
+} 
 
 # Ejercicio:
 # Trabajando con otro compañero, generar un modelo sim_pop que incluya también la
@@ -212,7 +216,7 @@ te <- ste2(n, edades = fert$edad, lambda = fert$h, Haz = T)
 
 ini <- 1900  # año de inicio
 fin <- 2000  # año de finalización
-
+N <- 10
 
 sim_pop <- function(N, ini, fin, mx, fx, srb){
   
@@ -232,30 +236,81 @@ sim_pop <- function(N, ini, fin, mx, fx, srb){
   
   cat("inicio ok, comenzando loop\n")
   
-  for (i in idMuj) {
-    if (pop$t_mte[i] < pop$t_primhijo[i]) {
-      pop$t_primhijo[i] <- Inf
-    }
-  } 
-  
-  
-  mat <- matrix(data = c(pop$t_primhijo, pop$t_mte), ncol = 2)
 
   
   while (tiempo < fin){
+    teventos <- matrix(data = c(pop$t_primhijo, pop$t_mte), ncol = 2)
+    sigEv <- which.min(teventos)
+    posMat <- arrayInd(sigEv, dim(teventos))
+    t <- as.numeric(teventos[posMat[1], posMat[2]])
     
-    rid <- which.min(mat) %% length(pop$id)
+    rid <- posMat[1]
+    tipoEv <- posMat[2]
     
-    t <- pop[rid, ]$t_mte
-    if (t == Inf) {break}
-    tiempo <- tiempo + t 
-    pop$edad <- pop$edad + t
-    pop$t_mte <- pop$t_mte - t
-    pop[rid,]$t_mte <- Inf
-    pop[rid,]$edad_mte <- pop[rid,]$edad
-    pop[rid,]$edad <- NA
+    
     print(tiempo)
+    tiempo <- tiempo + t
+    
+    pop$edad <- pop$edad + t
+
+    pop$t_primhijo <- pop$t_primhijo - t
+    pop$t_mte <- pop$t_mte - t
+    
+    
+    if (tipoEv == 1) #sucedio un nacimiento
+    {
+      N <- N +1
+      
+      pop[rid,]$t_primhijo <- Inf
+      nuevoNacid <- N
+      nuevoNacSexo <- sample(x = 1:2,size = 1, replace = TRUE, prob = c(1-srb, srb))
+      nuevoNacEdad <- 0
+      nuevoNacEdadMte <- Inf
+      nuevoNacTPrimHijo <- Inf
+      nuevoNacTMte <- ste(n = 1, edades = mx$edad, lambda = mx$h, Haz = F)
+      
+      nuevoNac <- c( 
+        nuevoNacid,
+        nuevoNacSexo,
+        nuevoNacEdad,
+        nuevoNacEdadMte,
+        nuevoNacTPrimHijo,
+        nuevoNacTMte
+      )
+      
+      pop <- rbind(pop,nuevoNac)
+      
+      if (pop$sexo[N] == 1)
+      {
+        pop$t_primhijo[N] <- ste(n = 1, edades = fx$edad, lambda = fx$h, Haz = F)
+      }
+      
+      
+    }
+    
+    if (tipoEv == 2)
+    {
+      if (pop[rid,]$t_mte < pop[rid,]$t_primhijo)
+      {
+        pop[rid,]$t_primhijo <- Inf
+      }
+      pop[rid,]$t_mte <- Inf
+      pop[rid,]$edad_mte <- pop[rid,]$edad
+      pop[rid,]$edad <- NA
+      
+    }
+      
+    #if (t == Inf) {break}
+    
+    
+    
+    
+    
+    teventos[posMat[1], posMat[2]] <- Inf
+    #teventos <- teventos - t
   } 
+  
+  
   
   return(pop)
 }
