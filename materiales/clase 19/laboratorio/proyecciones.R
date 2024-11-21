@@ -72,15 +72,15 @@ B <- vector()
 idf <- which(f>0)
 
 for(i in idf){
-  B[i-min(idf-1)] <- f[i] * 5 * ((N[i] + N[i-1]*px[i])/2) #completar
+  B[i-min(idf-1)] <- f[i] * 5 * ((N[i] + N[i-1]* px[i-1])/2) #completar
 }
   
   
 # calcular los nacimientos de mujeres 
-Bx_f <- 
+Bx_f <- sum(B) / (1 + srb)
   
 # calcular la población de edad 0-5 en 1998
-sw$p98[1] <- 
+sw$p98[1] <- (Bx_f * L[1]) / (5 * 100000)
 
   
 
