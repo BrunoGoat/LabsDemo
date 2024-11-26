@@ -150,10 +150,13 @@ leslie <- function(f, L)
     mat[1,i] <- L[1] * (f[i] + f[i+1] * L[i+1]/L[i]) / 2
     
   }
-  
-  mat %*% sw$p93
-  
+
+  return(mat)
 }
+
+Ml <- leslie(f,L)
+
+sw$p98 <- Ml %*% sw$p93
 
 
 # Ejercicio:
