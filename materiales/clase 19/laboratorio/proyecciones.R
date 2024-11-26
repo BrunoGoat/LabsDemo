@@ -40,10 +40,13 @@ N <- sw$p93
 options(scipen = 990)
 
 # guardamos el largo de L en un objeto "n"
-n <- length(L)
+n <- length(L) 
 
 # calcular las probabilidades de supervivencia en cada intervalo en un vector "px"
+
 px <- L[2:n]/L[-n]
+
+#profe: px <- exp(diff(log(L)))
 
 
 # agregar la probabilidad en el intervalos abierto (últimos dos intervalos)
@@ -52,6 +55,7 @@ t85 <- L[n]
 t80 <- L[n-1] + t85
 px[n-1] <- px[n] <- t85/t80
 
+#profe: px[n-1] <- px[n] <- L[n]/(L[n-1] + L[n])
 
 # Calculamos un vector auxiliar con la población en 1998
   
@@ -73,6 +77,9 @@ idf <- which(f>0)
 
 for(i in idf){
   B[i-min(idf-1)] <- f[i] * 5 * ((N[i] + N[i-1]* px[i-1])/2) #completar
+  
+  #((N[i] + N[i-1]* px[i-1])/2) promedio de las mujeres expuestas al riesgo
+  
 }
   
   
@@ -88,3 +95,4 @@ sw$p98[1] <- (Bx_f * L[1]) / (5 * 100000)
 # Reproducir la tabla presentada en clase con las poblaciones a cada año y los nacimientos 
 # por edad
 
+# los mismos calculos pero ahora con los datos del 98 para proyectar los 5 años futuros, 26/11 foto cel 
