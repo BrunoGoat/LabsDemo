@@ -109,7 +109,7 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
   # Variables necesarias para graficar el crecimiento de la población:
   
   # Población Total en cada año
-  N <- rep(NA, int)
+  N <- rep(NA, iter+1)
   
   # Años
   Y <- as.numeric(seq(ini, by = int, len = iter))
@@ -160,8 +160,8 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
     births <- pop[1,i+2]
     
     # Calcular población en el primer grupo de edad
-    pop[1,i+2] <- (births / (1+srb)) * Lf[1] / int
-    pop[1,i+3] <- (births / (1+srb)) * srb * Lm[1] / int
+    pop[1,i+2] <- births / (1+srb) * Lf[1] / int
+    pop[1,i+3] <- births * srb / (1+srb) * Lm[1] / int
     
     # Calcular el índice para el año actual
     idx <- which(is == i) + 1
@@ -172,7 +172,7 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
     colnames(pop)[i+3] <- paste0('m_', current_year)
     
     Sys.sleep(0.1)
-    dat_long <- reshape_long(dat = pop[,i+2], ini, int)
+    dat_long <- reshape_long(dat = pop[,c(i+2,i+3)], ini, int)
     
     gw$N[idx] <- pop[,i+2] + pop[,i+3]  
     
