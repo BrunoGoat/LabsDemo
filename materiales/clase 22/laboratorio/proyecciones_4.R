@@ -174,7 +174,7 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
     Sys.sleep(0.1)
     dat_long <- reshape_long(dat = pop[,c(i+2,i+3)], ini, int)
     
-    gw$N[idx] <- pop[,i+2] + pop[,i+3]  
+    gw$N[idx] <- sum(pop[,c(i+2,i+3)])  
     
     # Graficar el crecimiento poblacional y la pirámide actualizados
     par(mfrow = c(1, 2))
