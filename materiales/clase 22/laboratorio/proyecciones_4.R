@@ -112,30 +112,30 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
   N <- rep(NA, int)
   
   # Años
-  Y <- seq(ini, by = int, len = iter)
+  Y <- as.numeric(seq(ini, by = int, len = iter))
   
   # data frame con Población Total por año (una entrada por fila)
-  gw <- cbind(Y, N)
+  gw <- as.data.frame(cbind(Y, N))
     
   # Construir matrices para mujeres y hombres
   Mf <- leslie(L = Lf, m = f)
   Mm <- leslie(L = Lm, m = f)
   
   # Crear una matriz "pop" para guardar la población base y las proyecciones
-  pop <- matrix(0, lenght(Lf), 2*iter + 2)
-  pop[,1] <- Mf %*% Nf
-  pop[,2] <- Mm %*% Nm
+  pop <- matrix(NA, length(Lf), 2*iter + 2)
+  pop[,1] <- Nf
+  pop[,2] <- Nm
   
   # Asignar nombres de columnas a 'pop'
   colnames(pop) <- character(ncol(pop))
   colnames(pop)[1:2] <- c(paste0('f_', ini), paste0('m_', ini))
   
   # Obtener la estructura por edad de la población base
-  dat_long <- reshape_long(dat = , ini = ini, int = int)
+  dat_long <- reshape_long(dat = pop[,1:2], ini = ini, int = int)
   
   # Calcular la población total en el año base y guardar como primer elemento
   # del vector "gw"
-  gw$N[1] <- 
+  gw$N[1] <- sum(pop[,1:2])
   
   # Graficar el tamaño de la población base y la pirámide
   par(mfrow = c(1, 2))
@@ -149,19 +149,19 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
   pd_plot_base(dat = dat_long)
   
   # Proyectar la población de hombres y mujeres
-  is <- 
+  is <- seq(1,by=2,len=iter)
   
   for(i in is){
     
-    pop[,i+2] <- 
-    pop[,i+3] <- 
+    pop[,i+2] <- Mf %*% pop[,i]
+    pop[,i+3] <- Mm %*% pop[,i+1]
     
     # Guardar nacimientos
     births <- pop[1,i+2]
     
     # Calcular población en el primer grupo de edad
-    pop[1,i+2] <- 
-    pop[1,i+3] <- 
+    pop[1,i+2] <- (births / (1+srb)) * Lf[1] / int
+    pop[1,i+3] <- (births / (1+srb)) * srb * Lm[1] / int
     
     # Calcular el índice para el año actual
     idx <- which(is == i) + 1
@@ -172,9 +172,9 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
     colnames(pop)[i+3] <- paste0('m_', current_year)
     
     Sys.sleep(0.1)
-    dat_long <- reshape_long(dat = , ini, int)
+    dat_long <- reshape_long(dat = pop[,i+2], ini, int)
     
-    gw$N[idx] <- 
+    gw$N[idx] <- pop[,i+2] + pop[,i+3]  
     
     # Graficar el crecimiento poblacional y la pirámide actualizados
     par(mfrow = c(1, 2))
