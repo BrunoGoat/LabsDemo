@@ -91,8 +91,7 @@ swm$p98[1] <- (births / 2.05) * 1.05 * Lm[1]/ (5*100000)
 p_pop <- function(f, Lf, Lm, Nf, Nm, iter, int, srb){
   
   # Construir una matriz para hombres y otra para mujeres
-  
-  leslie <- function(f, L) {
+  leslie <- function(L, m) {
     
     # Obtenemos las probabilidades de supervivencia
     
@@ -120,37 +119,40 @@ p_pop <- function(f, Lf, Lm, Nf, Nm, iter, int, srb){
     Leslie_mat[n, n] <- Leslie_mat[n, n-1]
     
     for (i in 1:(n-1)) {
-      Leslie_mat[1, i] <- L[1] * (f[i] + f[i +1] * L[i + 1]/ L[i]) / 2
+      Leslie_mat[1, i] <- (m[i] + m[i +1] * L[i + 1]/ L[i]) * 5 / 2
     }
     return(Leslie_mat)
   }
   
-  hombre_leslie <- leslie(f*(1.05/2.05), Lm)
-  mujer_leslie <- leslie(f/2.05, Lf)
+  hombre_leslie <- leslie(Lm, f)
+  mujer_leslie <- leslie(Lf, f)
   
   # Crear una matriz "pop" para guardar la población base y las proyecciones
+  # 
   
-  mat_hombres <- matrix(0, length(Lm), iter + 1)
-  mat_mujeres <- matrix(0, length(Lf), iter + 1)
+  pop <- matrix(NA, length(Lf), 2*(iter+1))
   
-  mat_hombres[,1] <- Nm
-  mat_mujeres[,1] <- Nf
+  pop[,1] <- Nf
+  pop[,2] <- Nm
   
-  # Projectar la población de hombres y mujeres
+  # Proyectar la población de hombres y mujeres
   
   is <- seq(1,by=2, len=iter)
   
   for(i in is){
     
     # Proyectar usando la matriz
-    
-    hombre_leslie %*% mat_hombres[,i]
+    pop[, i+2] <- mujer_leslie %*% pop[,i]
+    pop[, i+3] <- hombre_leslie %*% pop[,i+1]
       
     # Guardar nacimientos
     
+    births <- pop[1, i+2]
     
     # Calcular población en 1er grupo de edad   
     
+    pop[1,i+2]<- births / (1+srb) * Lf[1]/int
+    pop[1,i+3]<-births * srb / (1+srb) * Lm[1]/int
     
   }
   

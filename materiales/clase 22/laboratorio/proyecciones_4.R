@@ -109,22 +109,22 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
   # Variables necesarias para graficar el crecimiento de la población:
   
   # Población Total en cada año
-  N <- 
+  N <- rep(NA, int)
   
   # Años
-  Y <- 
+  Y <- seq(ini, by = int, len = iter)
   
   # data frame con Población Total por año (una entrada por fila)
-  gw <- 
+  gw <- cbind(Y, N)
     
   # Construir matrices para mujeres y hombres
   Mf <- leslie(L = Lf, m = f)
   Mm <- leslie(L = Lm, m = f)
   
   # Crear una matriz "pop" para guardar la población base y las proyecciones
-  pop <- 
-  pop[,1] <- 
-  pop[,2] <- 
+  pop <- matrix(0, lenght(Lf), 2*iter + 2)
+  pop[,1] <- Mf %*% Nf
+  pop[,2] <- Mm %*% Nm
   
   # Asignar nombres de columnas a 'pop'
   colnames(pop) <- character(ncol(pop))
