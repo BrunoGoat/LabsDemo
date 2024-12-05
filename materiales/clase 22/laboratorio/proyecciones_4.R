@@ -112,10 +112,10 @@ p_pop_base <- function(f, Lf, Lm, Nf, Nm, iter, ini, int, srb){
   N <- rep(NA, iter+1)
   
   # Años
-  Y <- as.numeric(seq(ini, by = int, len = iter))
+  Y <- as.numeric(seq(ini, ini + (ini*iter), int))
   
   # data frame con Población Total por año (una entrada por fila)
-  gw <- as.data.frame(cbind(Y, N))
+  gw <- as.data.frame(cbind(N,Y))
     
   # Construir matrices para mujeres y hombres
   Mf <- leslie(L = Lf, m = f)
@@ -218,3 +218,57 @@ sw_pop <- p_pop_base(f = f,
                      int = 5,
                      srb = 1.05)
 
+
+#Apuntes 
+
+# TRABAJO 2
+# 
+# ELEGIR UN PAIS, DESCARGAR, TASAS CONDICIONALES, 
+# GRAFICAMOS LAS TASAS Y EXPLICAMOS QUE ESTAMOS MIRANDO
+# 
+
+# 
+# GRAFICAR MX EN FUNCION D ELA EDAD
+# TOMAR DE 0 A 100 para el GRAFICO KOPEN MAIER 
+# INTERESA LA DESCRIPCION DETALLA ADA YCOMO PODEMOS QUE HACE LA FUNCIOJN, NO A PRACTICO SI NO LA IDEA
+# metoDO DE TRANSFORMADA DINVERSAM RIESGO ACUMULADO, DESCRIPCION CONCEPTUAL, NO "FOR" "LOOP", CONCEPCTUAL!!
+# 
+# QUE ES LA COMPARACION DE KOPEN MAIER
+# LO MISMO PARA LA FECUNDIDAD, ACA EN EL GRAFICO NO HAY CORRESPONDENCIA EN CIERTOS PUNTOS
+# 
+# LAS TASAS CONDICIONALES NOS INTERESA SOLO M1X RIESGO DEL PRIMER HIJO
+# 
+# 
+# 
+# 
+# PARTE 2 
+# TASAS NO CONDICIONALES
+# 
+# MODIFICAR LA FUNCION PARA QUE CAMBIEN LAS LS Y LAS XS COMPARAMAS LA POBLACION DE 1900 CON LA DE 2022
+# CON LA POBLACION ESPERADA EL CAMBIO ES POR LA MIGRACION, DESCRIPCION DE LA PIRAMIDE CONTEXTUAL
+# 
+# SUECIA NO
+# 
+# 
+# TASAS ESPECIFICAS YEAR - AGE- ASFR ASFRS
+# 
+# POBLACION 
+# 
+# YEAR AGE FEMALE MALE TOTAL 
+# 
+# TABLAS DE VIDAd period 1x1, LIFE TABLES
+# 
+# year age MX QX AX LX DX LX TX EX
+# 
+
+#MAX(MINIMOS de pop,f,lf,lm) 
+#
+#dat[[1]][.females]
+
+#igual que la utlima pero cambia las ls y las fs, tenemos que iterar en el  for para tomar esta vez no un vector si no una lista
+#
+# nos tiene que quedar una piramide que se mueva con diferentes mortalidades y fecundidades
+# 
+# como chequeo, agarro las ultima poblacion, del humnamortality, y la grafico con pd_plot
+# 
+# y cual 
